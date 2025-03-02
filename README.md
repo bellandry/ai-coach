@@ -1,8 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Career Coach
+
+An intelligent career development platform built with [Next.js](https://nextjs.org) that helps professionals advance their careers through AI-powered tools and guidance.
+
+## Features
+
+- **Resume Review** - Get professional feedback on your resume with AI-powered analysis
+- **Cover Letter Generator** - Create tailored cover letters based on job descriptions
+- **Resume Builder** - Build professional resumes with guided templates
+- **Smart Task Manager** - Improve time management and learning efficiency with AI assistance
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+
+```bash
+git clone https://github.com/bellandry/ai-coach
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Copy .env.example to .env and fill in your environment variables
+4. Run the development server:
 
 ```bash
 npm run dev
@@ -16,21 +38,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Framework : Next.js 15.2.0
+- Styling : Tailwind CSS
+- AI Integration : Gemini 2.0 Flash
+- Authentication : Custom authentication
+- Database : PostgreSQL
+- Deployment : Vercel
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Connect With Me
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- LinkedIn: [Bellandry](https://linkedin.com/in/bellandry)
+- Website: [Laclass Dev](https://laclass.dev)
+- GitHub: [Bellandry](https://github.com/bellandry)
