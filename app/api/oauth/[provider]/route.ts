@@ -14,7 +14,7 @@ export async function GET(
   const { provider: rawProvider } = await params;
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
-  const provider = z.nativeEnum(OAuthProvider).parse(rawProvider.toUpperCase());
+  const provider = z.nativeEnum(OAuthProvider).parse(rawProvider);
 
   if (!code || !state) {
     redirect(

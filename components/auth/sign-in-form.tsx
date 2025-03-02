@@ -38,20 +38,6 @@ const SignInForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {error && <p className="text-destructive">{error}</p>}
-          {/* <div className="flex gap-4">
-          <Button
-            type="button"
-            onClick={async () => await oAuthSignIn("discord")}
-          >
-            Discord
-          </Button>
-          <Button
-            type="button"
-            onClick={async () => await oAuthSignIn("github")}
-          >
-            GitHub
-          </Button>
-        </div> */}
           <FormField
             control={form.control}
             name="email"

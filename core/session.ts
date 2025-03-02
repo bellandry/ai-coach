@@ -1,5 +1,4 @@
 import { redisClient } from "@/redis/redis";
-import crypto from "crypto";
 import { z } from "zod";
 
 // Seven days in seconds
@@ -50,7 +49,12 @@ export async function createUserSession(
   user: UserSession,
   cookies: Pick<Cookies, "set">
 ) {
-  const sessionId = crypto.randomBytes(512).toString("hex").normalize();
+  const array = new Uint8Array(64);
+  crypto.getRandomValues(array);
+  const sessionId = Array.from(array, (byte) =>
+    byte.toString(16).padStart(2, "0")
+  ).join("");
+
   await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
     ex: SESSION_EXPIRATION_SECONDS,
   });
