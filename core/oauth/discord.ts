@@ -4,7 +4,7 @@ import { OAuthClient } from "./base";
 
 export function createDiscordOAuthClient() {
   return new OAuthClient({
-    provider: "DISCORD",
+    provider: "discord",
     clientId: env.DISCORD_CLIENT_ID,
     clientSecret: env.DISCORD_CLIENT_SECRET,
     scopes: ["identify", "email"],

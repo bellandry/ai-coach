@@ -6,8 +6,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { getCurrentUser } from "@/core/current-user";
 
-export default function Page() {
+export default async function Page() {
+  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -36,6 +38,7 @@ export default function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          {currentUser.role}
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="bg-muted/50 aspect-video rounded-xl" />
             <div className="bg-muted/50 aspect-video rounded-xl" />

@@ -13,9 +13,9 @@ enum UserRole {
 }
 
 enum OAuthProvider {
-  DISCORD
-  GITHUB
-  GOOGLE
+  discord
+  github
+  google
 }
 
 model User {

@@ -4,7 +4,7 @@ import { OAuthClient } from "./base";
 
 export function createGithubOAuthClient() {
   return new OAuthClient({
-    provider: "GITHUB",
+    provider: "github",
     clientId: env.GITHUB_CLIENT_ID,
     clientSecret: env.GITHUB_CLIENT_SECRET,
     scopes: ["user:email", "read:user"],

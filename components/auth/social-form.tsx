@@ -9,20 +9,14 @@ import { Button } from "../ui/button";
 const SocialForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const loginWithGithub = async () => {
-    setIsLoading(true);
-  };
-
-  const loginWithGoogle = async () => {};
-
   return (
     <div className="grid gap-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Button
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={async () => await oAuthSignIn("GITHUB")}
+          onClick={async () => await oAuthSignIn("github")}
         >
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
@@ -35,16 +29,35 @@ const SocialForm = () => {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={loginWithGoogle}
+          onClick={async () => await oAuthSignIn("google")}
         >
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
           ) : (
             <Image
               src="/google.svg"
-              alt="Google"
+              alt="Google Logo"
               width={35}
               height={35}
+              className="mr-2"
+            />
+          )}
+          Google
+        </Button>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          onClick={async () => await oAuthSignIn("discord")}
+        >
+          {isLoading ? (
+            <span className="h-5 w-5 animate-spin" />
+          ) : (
+            <Image
+              src="/discord.svg"
+              alt="Discord Logo"
+              width={16}
+              height={16}
               className="mr-2"
             />
           )}
