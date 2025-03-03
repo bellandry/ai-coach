@@ -80,13 +80,22 @@ function connectUserToAccount(
       user = newUser;
     }
 
-    await tx.userOAuthAccount.create({
-      data: {
+    const existingAccount = await tx.userOAuthAccount.findFirst({
+      where: {
         provider,
         userId: user.id,
-        providerAccountId: id,
       },
     });
+
+    if (!existingAccount) {
+      await tx.userOAuthAccount.create({
+        data: {
+          provider,
+          userId: user.id,
+          providerAccountId: id,
+        },
+      });
+    }
 
     return user;
   });

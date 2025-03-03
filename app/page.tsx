@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center container mx-auto">
-      <div className="min-h-screen relative flex flex-col items-center justify-center bg-black/[0.96] w-screen">
+      <div className="min-h-screen relative flex flex-col items-center justify-center w-screen">
         <Navbar user={fullUser} />
         <Hero />
       </div>

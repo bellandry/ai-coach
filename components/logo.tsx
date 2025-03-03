@@ -32,7 +32,7 @@ export const Logo = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className={cn(
-          "text-slate-900 dark:text-white whitespace-pre font-semibold text-xl ${size}",
+          `whitespace-pre font-semibold text-xl`,
           size && `${size}`
         )}
       >
