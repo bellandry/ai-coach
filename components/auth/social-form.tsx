@@ -16,7 +16,11 @@ const SocialForm = () => {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={async () => await oAuthSignIn("github")}
+          onClick={async () => {
+            setIsLoading(true);
+            await oAuthSignIn("github");
+            setIsLoading(false);
+          }}
         >
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
@@ -29,7 +33,11 @@ const SocialForm = () => {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={async () => await oAuthSignIn("google")}
+          onClick={async () => {
+            setIsLoading(true);
+            await oAuthSignIn("google");
+            setIsLoading(false);
+          }}
         >
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
@@ -42,7 +50,11 @@ const SocialForm = () => {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={async () => await oAuthSignIn("discord")}
+          onClick={async () => {
+            setIsLoading(true);
+            await oAuthSignIn("discord");
+            setIsLoading(false);
+          }}
         >
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
