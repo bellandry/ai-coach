@@ -14,9 +14,9 @@ export async function GET(
   const { provider: rawProvider } = await params;
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
-  const provider = z.nativeEnum(OAuthProvider).parse(rawProvider);
+  const provider = z.nativeEnum(OAuthProvider).parse(rawProvider.trim());
 
-  if (!code || !state) {
+  if (typeof code !== "string" || typeof state !== "string") {
     redirect(
       `/sign-in?oauthError=${encodeURIComponent(
         "Failed to connect. Please try again."
@@ -24,7 +24,7 @@ export async function GET(
     );
   }
 
-  const oAuthClient = getOAuthClient(provider as OAuthProvider);
+  const oAuthClient = getOAuthClient(provider);
   try {
     const oAuthUser = await oAuthClient.fetchUser(code, state, await cookies());
     const user = await connectUserToAccount(oAuthUser, provider);
@@ -38,11 +38,16 @@ export async function GET(
     );
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 function connectUserToAccount(
-  { id, email, name }: { id: string; email: string; name: string },
+  {
+    id,
+    email,
+    name,
+    picture,
+  }: { id: string; email: string; name: string; picture?: string },
   provider: OAuthProvider
 ) {
   return db.$transaction(async (tx) => {
@@ -56,11 +61,21 @@ function connectUserToAccount(
         data: {
           email,
           name,
+          profile: picture ?? null,
         },
         select: {
           id: true,
           role: true,
         },
+      });
+      user = newUser;
+    } else if (picture) {
+      const newUser = await tx.user.update({
+        where: { id: user.id },
+        data: {
+          profile: picture,
+        },
+        select: { id: true, role: true },
       });
       user = newUser;
     }

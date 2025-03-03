@@ -2,6 +2,7 @@
 
 import { signIn } from "@/app/(auth)/actions";
 import { signInSchema } from "@/lib/definitions";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,6 +21,7 @@ import SocialForm from "./social-form";
 
 const SignInForm = () => {
   const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof signInSchema>>({
     defaultValues: {
       email: "",
@@ -28,8 +30,10 @@ const SignInForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof signInSchema>) {
+    setLoading(true);
     const error = await signIn(data);
     setError(error);
+    setLoading(false);
   }
 
   return (
@@ -65,7 +69,8 @@ const SignInForm = () => {
             )}
           />
           <div className="grid gap-4">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="size-4 animate-spin" />}
               Me Connecter
             </Button>
             <div className="flex gap-2 items-center justify-end">

@@ -9,10 +9,13 @@ import {
 import { getCurrentUser } from "@/core/current-user";
 
 export default async function Page() {
-  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
+  const currentUser = await getCurrentUser({
+    redirectIfNotFound: true,
+    withFullUser: true,
+  });
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={currentUser} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -22,23 +25,10 @@ export default async function Page() {
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <ToggleTheme />
-            {/* <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb> */}
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {currentUser.role}
+          {currentUser.name}
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="bg-muted/50 aspect-video rounded-xl" />
             <div className="bg-muted/50 aspect-video rounded-xl" />

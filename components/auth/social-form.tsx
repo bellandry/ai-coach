@@ -34,13 +34,7 @@ const SocialForm = () => {
           {isLoading ? (
             <span className="h-5 w-5 animate-spin" />
           ) : (
-            <Image
-              src="/google.svg"
-              alt="Google Logo"
-              width={35}
-              height={35}
-              className="mr-2"
-            />
+            <Image src="/google.svg" alt="Google Logo" width={35} height={35} />
           )}
           Google
         </Button>
@@ -61,7 +55,7 @@ const SocialForm = () => {
               className="mr-2"
             />
           )}
-          Google
+          Discord
         </Button>
       </div>
       <div className="relative">

@@ -33,11 +33,11 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
     salt: user.salt,
   });
 
-  if (!isCorrectPassword) return "Unable to log you in";
+  if (!isCorrectPassword) return "Mot de passe incorrect!";
 
   await createUserSession(user, await cookies());
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
@@ -65,6 +65,8 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
       select: {
         id: true,
         role: true,
+        name: true,
+        email: true,
       },
     });
 
@@ -74,7 +76,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     return "Unable to create account";
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function logOut() {

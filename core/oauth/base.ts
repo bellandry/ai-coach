@@ -91,17 +91,44 @@ export class OAuthClient<T> {
       getCodeVerifier(cookies)
     );
 
+    console.log("le access token; ", accessToken, tokenType);
+
     const user = await fetch(this.urls.user, {
       headers: {
         Authorization: `${tokenType} ${accessToken}`,
       },
     })
       .then((res) => res.json())
-      .then((rawData) => {
+      .then(async (rawData) => {
+        // Vérifier si l'email est `null`
+        if (!rawData.email) {
+          console.log("Email non trouvé, récupération via /user/emails...");
+
+          const emailResponse = await fetch(
+            "https://api.github.com/user/emails",
+            {
+              headers: {
+                Authorization: `${tokenType} ${accessToken}`,
+                Accept: "application/vnd.github.v3+json",
+              },
+            }
+          );
+
+          const emails = await emailResponse.json();
+          console.log("Emails récupérés :", emails);
+
+          // Sélectionner l'email principal vérifié
+          rawData.email = emails.find(
+            (email: { primary: boolean; verified: boolean; email: string }) =>
+              email.primary && email.verified
+          )?.email;
+        }
+
         const { data, success, error } =
           this.userInfo.schema.safeParse(rawData);
-        if (!success) throw new InvalidUserError(error);
+        console.log("le user créé", rawData);
 
+        if (!success) throw new InvalidUserError(error);
         return data;
       });
 
@@ -109,23 +136,27 @@ export class OAuthClient<T> {
   }
 
   private fetchToken(code: string, codeVerifier: string) {
+    const body = new URLSearchParams({
+      code,
+      redirect_uri: this.redirectUrl.toString(),
+      grant_type: "authorization_code",
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      code_verifier: codeVerifier,
+    });
+    console.log(body);
+    console.log(this.urls.token);
     return fetch(this.urls.token, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
-      body: new URLSearchParams({
-        code,
-        redirect_uri: this.redirectUrl.toString(),
-        grant_type: "authorization_code",
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        code_verifier: codeVerifier,
-      }),
+      body,
     })
       .then((res) => res.json())
       .then((rawData) => {
+        console.log("les raw datas : ", rawData);
         const { data, success, error } = this.tokenSchema.safeParse(rawData);
         if (!success) throw new InvalidTokenError(error);
 
