@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,7 +15,7 @@ export const Logo = ({
     <Link
       href="/"
       className={cn(
-        "rounded-md py-3 px-1 font-normal w-fit flex space-x-2 items-center text-slate-900 relative z-20",
+        "rounded-md py-3 px-1 font-normal w-fit flex space-x-2 items-center relative z-20",
         className && `${className}`
       )}
     >
@@ -28,16 +27,9 @@ export const Logo = ({
       >
         AI.
       </div>
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className={cn(
-          `whitespace-pre font-semibold text-xl`,
-          size && `${size}`
-        )}
-      >
+      <span className={cn(`font-semibold text-xl`, size && `${size}`)}>
         Coach
-      </motion.span>
+      </span>
     </Link>
   );
 };

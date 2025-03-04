@@ -38,6 +38,10 @@ const SignInForm = () => {
 
   return (
     <div className="grid gap-4">
+      <h2 className="text-3xl font-bold tracking-tight">Connexion</h2>
+      <p className="mb-6 max-w-sm text-muted-foreground">
+        Bienvenue sur AI Coach. Veuillez vous connecter pour continuer.
+      </p>
       <SocialForm />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -60,23 +64,28 @@ const SignInForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Mot de passe</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field} placeholder="••••••••" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="grid gap-4">
+          <div className="grid gap-2">
+            <div className="flex justify-end">
+              <Button asChild variant="link" size="sm">
+                <Link href="/forgot-password">Mot de passe oublié ?</Link>
+              </Button>
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="size-4 animate-spin" />}
               Me Connecter
             </Button>
-            <div className="flex gap-2 items-center justify-end">
-              Pas encore de compte ?
+            <div className="flex items-center justify-center text-sm text-muted-foreground">
+              Vous n&apos;avez pas de compte?
               <Button asChild variant="link">
-                <Link href="/sign-up">Créer mon compte</Link>
+                <Link href="/sign-up">S&apos;inscrire</Link>
               </Button>
             </div>
           </div>
