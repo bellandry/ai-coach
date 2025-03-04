@@ -14,12 +14,12 @@ export default function AuthLayout({
             backgroundImage:
               'url("https://images.unsplash.com/photo-1625314887424-9f190599bd56")',
             backgroundSize: "cover",
-            opacity: 0.8,
+            opacity: 0.9,
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
-        <Logo className="relative top-2 left-2" />
-        <div className="flex flex-col gap-2 pb-8 justify-end absolute bottom-2 left-8">
+        <Logo className="relative top-2 left-2 text-neutral-100" />
+        <div className="flex flex-col gap-2 p-12 justify-end absolute bottom-0 left-0">
           <h2 className="text-4xl font-semibold">AI Coach</h2>
           <p className="text-muted-foreground text-md lg:text-lg">
             Visualisez, analysez automatiquement et améliorez votre carrière
