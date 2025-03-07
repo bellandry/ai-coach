@@ -1,8 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { StarsIcon } from "lucide-react";
+import { ChevronRight, StarsIcon } from "lucide-react";
 import Link from "next/link";
+import { AnimatedGradientText } from "./magicui/animated-gradient-text";
 import { Button } from "./ui/button";
 import { SplineScene } from "./ui/splite";
 
@@ -20,6 +22,29 @@ export const Hero = () => {
           }}
           className="px-4 flex-1 gap-6 p-8 relative z-10 flex flex-col justify-center"
         >
+          <div className="group relative w-fit flex items-center justify-center rounded-full px-4 py-1.5 shadow-[inset_0_-8px_10px_#8fdfff1f] transition-shadow duration-500 ease-out hover:shadow-[inset_0_-5px_10px_#8fdfff3f] ">
+            <span
+              className={cn(
+                "absolute inset-0 block h-full w-full animate-gradient rounded-[inherit] bg-gradient-to-r from-[#ffaa40]/50 via-[#9c40ff]/50 to-[#ffaa40]/50 bg-[length:300%_100%] p-[1px]"
+              )}
+              style={{
+                WebkitMask:
+                  "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "destination-out",
+                mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                maskComposite: "subtract",
+                WebkitClipPath: "padding-box",
+              }}
+            />
+            🤖 <hr className="mx-2 h-4 w-px shrink-0 bg-neutral-500" />
+            <AnimatedGradientText className="text-sm font-medium">
+              Bienvenu sur Ai Coach
+            </AnimatedGradientText>
+            <ChevronRight
+              className="ml-1 size-4 stroke-neutral-500 transition-transform
+ duration-300 ease-in-out group-hover:translate-x-0.5"
+            />
+          </div>
           <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-bl from-neutral-900 dark:from-neutral-50 to-neutral-600 dark:to-neutral-500">
             Votre allié intelligent pour booster votre carrière
           </h1>
@@ -38,7 +63,7 @@ export const Hero = () => {
         <div className="flex-1 relative">
           <SplineScene
             scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
+            className="w-full h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
           />
         </div>
       </div>

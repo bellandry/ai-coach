@@ -2,15 +2,15 @@ import { purposes } from "@/constants";
 
 export const PurposeSection = () => {
   return (
-    <section className="py-16 md:py-24 w-full overflow-hidden px-4">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-16">
+      <div className="max-w-6xl px-4 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <p className="text-sm md:text-md text-purple-500/70 font-medium mb-2">
               ACCOMPLISSEZ PLUS
             </p>
             <h2 className="text-3xl md:w-4/5 w-full md:text-4xl font-bold">
-              Profitez de la puissance de l&apos;IA pour booster votre carrière
+              Profitez de la puissance de notre assistant IA
             </h2>
           </div>
           <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 justify-between gap-8">
