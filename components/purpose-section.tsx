@@ -10,7 +10,7 @@ const PurposeSection = () => {
               ACCOMPLISSEZ PLUS
             </p>
             <h2 className="text-3xl md:w-4/5 w-full md:text-4xl font-bold">
-              Profitez de la puissance de l'IA pour booster votre carrière
+              Profitez de la puissance de l&apos;IA pour booster votre carrière
             </h2>
           </div>
           <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 justify-between gap-8">

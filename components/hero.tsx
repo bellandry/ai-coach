@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { StarsIcon } from "lucide-react";
 import Link from "next/link";
-import { RainbowButton } from "./ui/rainbow-button";
+import { Button } from "./ui/button";
 import { SplineScene } from "./ui/splite";
 
 const Hero = () => {
@@ -28,11 +28,11 @@ const Hero = () => {
             tâches efficacement. AI Coach vous accompagne à chaque étape du
             recrutement et de l&apos;apprentissage.
           </p>
-          <Link href="/sign-up">
-            <RainbowButton className="w-fit gap-2">
+          <Button size="lg" asChild>
+            <Link href="/sign-up" className="w-fit gap-2">
               <StarsIcon className="size-4 mr-2" /> Commencer gratuitement
-            </RainbowButton>
-          </Link>
+            </Link>
+          </Button>
         </motion.div>
 
         <div className="flex-1 relative">
