@@ -1,7 +1,8 @@
 import { UserType } from "@/components/app-sidebar";
-import Hero from "@/components/hero";
+import { Feature } from "@/components/feature";
+import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
-import PurposeSection from "@/components/purpose-section";
+import { PurposeSection } from "@/components/purpose-section";
 import { getCurrentUser } from "@/core/current-user";
 
 export default async function Home() {
@@ -13,8 +14,8 @@ export default async function Home() {
       <Navbar user={fullUser} />
       <Hero />
       <PurposeSection />
-      {/* <Feature />
-      <Testimonials /> */}
+      <Feature />
+      {/* <Testimonials /> */}
     </div>
   );
 }

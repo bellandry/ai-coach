@@ -26,7 +26,7 @@ export const features = [
     content:
       "Utilise l'IA pour optimiser ton CV et le rendre irrésistible aux recruteurs.",
     image:
-      "https://images.unsplash.com/photo-1603575449550-5090ee5b3c26?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1705544363568-425eabe4de51?q=80&w=1974&auto=format&fit=crop",
   },
   {
     step: "Étape 2",
@@ -42,7 +42,7 @@ export const features = [
     content:
       "Réponds à des questions d'entretien générées par l'IA en fonction du poste visé.",
     image:
-      "https://images.unsplash.com/photo-1590658268034-5da3b115d13d?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop",
   },
   {
     step: "Étape 4",
@@ -50,7 +50,7 @@ export const features = [
     content:
       "Planifie et organise tes candidatures et tes sessions de préparation avec un système de gestion de tâches intégré.",
     image:
-      "https://images.unsplash.com/photo-1554168154-768a997c9a7b?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072&auto=format&fit=crop",
   },
 ];
 

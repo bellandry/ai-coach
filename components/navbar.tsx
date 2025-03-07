@@ -21,7 +21,7 @@ import {
 
 export const Navbar = ({ user }: { user: UserType | undefined }) => {
   return (
-    <div className="w-full absolute z-50 top-0 items-center backdrop-blur-sm border-b dark:border-slate-900 flex py-1 px-4">
+    <div className="w-full fixed z-50 top-0 items-center backdrop-blur-sm border-b dark:border-slate-900 flex py-1 px-4">
       <nav className="container mx-auto flex items-center justify-between">
         <Logo />
         <div className="flex gap-2 items-center">

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { SplineScene } from "./ui/splite";
 
-const Hero = () => {
+export const Hero = () => {
   return (
-    <section className="h-[calc(100vh-100px)] mt-[100px] max-h-[700px] overflow-hidden container mx-auto">
-      <div className="flex h-full flex-col md:flex-row gap-6">
+    <section className="h-[calc(100vh-100px)] mt-[100px] max-h-[800px] overflow-hidden container mx-auto">
+      <div className="flex h-full w-full flex-col md:flex-row gap-6">
         <motion.div
           initial={{ opacity: 0.0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -38,12 +38,10 @@ const Hero = () => {
         <div className="flex-1 relative">
           <SplineScene
             scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="w-full h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
+            className="h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
           />
         </div>
       </div>
     </section>
   );
 };
-
-export default Hero;
