@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import { StarsIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import Link from "next/link";
+import { RainbowButton } from "./ui/rainbow-button";
 import { SplineScene } from "./ui/splite";
 
 const Hero = () => {
   return (
-    <div className="w-full h-[calc(100vh-100px)] mt-[100px] relative overflow-hidden container mx-auto">
+    <section className="h-[calc(100vh-100px)] mt-[100px] max-h-[700px] overflow-hidden container mx-auto">
       <div className="flex h-full flex-col md:flex-row gap-6">
         <motion.div
           initial={{ opacity: 0.0, y: 40 }}
@@ -22,24 +23,26 @@ const Hero = () => {
           <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-bl from-neutral-900 dark:from-neutral-50 to-neutral-600 dark:to-neutral-500">
             Votre allié intelligent pour booster votre carrière
           </h1>
-          <p className="text-neutral-800 dark:text-neutral-300 max-w-lg text-sm md:text-md">
+          <p className="text-neutral-800 dark:text-neutral-300 max-w-lg text-sm md:text-md lg:text-lg">
             Optimisez votre CV, entraînez-vous aux entretiens et gérez vos
             tâches efficacement. AI Coach vous accompagne à chaque étape du
-            recrutement et de l’apprentissage.
+            recrutement et de l&apos;apprentissage.
           </p>
-          <Button className="w-fit">
-            <StarsIcon className="size-4 mr-2" /> Essayez gratuitement
-          </Button>
+          <Link href="/sign-up">
+            <RainbowButton className="w-fit gap-2">
+              <StarsIcon className="size-4 mr-2" /> Commencer gratuitement
+            </RainbowButton>
+          </Link>
         </motion.div>
 
         <div className="flex-1 relative">
           <SplineScene
             scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="w-full h-[500px] drop-shadow-[0_0_20px_rgba(0,0,0,245)] dark:drop-shadow-[0_0_20px_rgba(245,245,245,245)]"
+            className="w-full h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
