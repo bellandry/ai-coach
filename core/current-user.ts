@@ -34,28 +34,35 @@ async function _getCurrentUser({
   withFullUser = false,
   redirectIfNotFound = false,
 } = {}) {
-  const user = await getUserFromSession(await cookies());
+  const cookieStore = await cookies();
+  const sessionUser = await getUserFromSession(cookieStore);
 
-  if (user == null) {
+  if (sessionUser == null) {
     if (redirectIfNotFound) return redirect("/sign-in");
     return null;
   }
 
   if (withFullUser) {
-    const fullUser = await getUserFromDb(user.id);
+    const fullUser = await getUserFromDb(sessionUser.id);
     // This should never happen
     if (fullUser == null) throw new Error("User not found in database");
     return fullUser;
   }
 
-  return user;
+  return sessionUser;
 }
 
 export const getCurrentUser = cache(_getCurrentUser);
 
-function getUserFromDb(id: string) {
-  return db.user.findFirst({
-    select: { id: true, email: true, role: true, name: true, profile: true },
-    where: { id },
+function getUserFromDb(userId: string) {
+  return db.user.findUnique({
+    where: { id: userId },
+    include: {
+      oAuthAccounts: {
+        select: {
+          provider: true,
+        },
+      },
+    },
   });
 }
