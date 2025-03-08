@@ -51,32 +51,24 @@ export async function uploadProfileImage(formData: FormData) {
     throw new Error("Aucun fichier fourni");
   }
 
-  // Ici, vous devriez implémenter la logique d'upload vers un service comme AWS S3, Cloudinary, etc.
-  // Pour cet exemple, nous allons simuler un upload et retourner une URL fictive
-
-  // Exemple avec Cloudinary (à adapter selon votre service d'upload)
-  // const formData = new FormData();
-  // formData.append("file", file);
-  // formData.append("upload_preset", "your_preset");
-  // const response = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/image/upload", {
-  //   method: "POST",
-  //   body: formData,
-  // });
-  // const data = await response.json();
-  // return data.secure_url;
-
-  // URL fictive pour l'exemple
-  const mockUrl = `https://images.unsplash.com/photo-${Date.now()}?user=${
-    currentUser.id
-  }`;
+  formData.append("file", file);
+  formData.append("upload_preset", "your_preset");
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+  const data = await response.json();
 
   // Mise à jour du profil utilisateur avec la nouvelle URL
   await db.user.update({
     where: { id: currentUser.id },
-    data: { profile: mockUrl },
+    data: { profile: data.secure_url },
   });
 
-  return mockUrl;
+  return data.secure_url;
 }
 
 export async function connectProvider(provider: OAuthProvider) {

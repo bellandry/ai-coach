@@ -5,20 +5,12 @@ import {
   disconnectProvider,
 } from "@/app/dashboard/profile/actions";
 import { UserType } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { OAuthProvider } from "@prisma/client";
-import { Github, Loader2 } from "lucide-react";
+import { Github } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ProviderCard } from "./provider-card";
 
 interface ProfileProvidersProps {
   user: UserType & { oAuthAccounts?: { provider: OAuthProvider }[] };
@@ -92,66 +84,5 @@ export function ProfileProviders({ user }: ProfileProvidersProps) {
         onDisconnect={() => handleDisconnect("discord")}
       />
     </div>
-  );
-}
-
-interface ProviderCardProps {
-  provider: OAuthProvider;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  isConnected: boolean;
-  isLoading: boolean;
-  onConnect: () => void;
-  onDisconnect: () => void;
-}
-
-function ProviderCard({
-  provider,
-  title,
-  description,
-  icon,
-  isConnected,
-  isLoading,
-  onConnect,
-  onDisconnect,
-}: ProviderCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border">
-          {icon}
-        </div>
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm">
-          {isConnected
-            ? `Votre compte est connecté à ${title}`
-            : `Connectez votre compte à ${title} pour vous connecter plus facilement`}
-        </p>
-      </CardContent>
-      <CardFooter>
-        {isConnected ? (
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={onDisconnect}
-            disabled={isLoading}
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Déconnecter
-          </Button>
-        ) : (
-          <Button className="w-full" onClick={onConnect} disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Connecter
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
   );
 }
