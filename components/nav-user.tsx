@@ -85,9 +85,9 @@ export function NavUser({ user }: { user: UserType }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profil</span>
+                <Link href="/dashboard/profile" className="cursor-pointer">
+                  <User className="h-4 w-4" />
+                  <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>

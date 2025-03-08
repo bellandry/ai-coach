@@ -16,7 +16,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="container max-w-4xl py-10">
+    <div className="container mx-auto px-4 md:px-8">
       <ProfileHeader user={user} />
 
       <div className="grid gap-10 mt-8">

@@ -3,7 +3,7 @@
 import {
   connectProvider,
   disconnectProvider,
-} from "@/app/dashboard/profile/actions";
+} from "@/app/(root)/dashboard/profile/actions";
 import { UserType } from "@/components/app-sidebar";
 import { OAuthProvider } from "@prisma/client";
 import { Github } from "lucide-react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { uploadProfileImage } from "@/app/dashboard/profile/actions";
+import { uploadProfileImage } from "@/app/(root)/dashboard/profile/actions";
 import { UserType } from "@/components/app-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { initials } from "@/lib/user-helper";
 import { Camera, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,12 +28,6 @@ export function ProfileImageUpload({
 }: ProfileImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState(user.profile || "");
-
-  const initials = user.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,7 +70,9 @@ export function ProfileImageUpload({
         <div className="flex items-center gap-6">
           <Avatar className="h-24 w-24">
             <AvatarImage src={imageUrl} alt={user.name} />
-            <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+            <AvatarFallback className="text-xl">
+              {initials(user.name)}
+            </AvatarFallback>
           </Avatar>
 
           <FormControl>
@@ -86,13 +83,16 @@ export function ProfileImageUpload({
                     type="button"
                     variant="outline"
                     disabled={isUploading}
+                    onClick={() =>
+                      document.getElementById("profile-image")?.click()
+                    }
                   >
                     {isUploading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Camera className="mr-2 h-4 w-4" />
                     )}
-                    Changer d'image
+                    Changer d&apos;image
                   </Button>
                 </div>
                 <Input
