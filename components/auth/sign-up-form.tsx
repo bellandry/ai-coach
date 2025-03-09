@@ -122,17 +122,11 @@ const SignUpForm = () => {
                 <FormLabel className="ml-2 text-sm font-normal leading-snug">
                   <p>
                     J&apos;accepte les{" "}
-                    <Link
-                      href="/terms"
-                      className="text-primary hover:underline"
-                    >
+                    <Link href="/terms" className="text-primary underline">
                       conditions d&apos;utilisation
                     </Link>{" "}
                     et la{" "}
-                    <Link
-                      href="/privacy"
-                      className="text-primary hover:underline"
-                    >
+                    <Link href="/privacy" className="text-primary underline">
                       politique de confidentialité
                     </Link>
                   </p>

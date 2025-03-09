@@ -91,8 +91,6 @@ export class OAuthClient<T> {
       getCodeVerifier(cookies)
     );
 
-    console.log("le access token; ", accessToken, tokenType);
-
     const user = await fetch(this.urls.user, {
       headers: {
         Authorization: `${tokenType} ${accessToken}`,
@@ -102,8 +100,6 @@ export class OAuthClient<T> {
       .then(async (rawData) => {
         // Vérifier si l'email est `null`
         if (!rawData.email) {
-          console.log("Email non trouvé, récupération via /user/emails...");
-
           const emailResponse = await fetch(
             "https://api.github.com/user/emails",
             {
@@ -115,7 +111,6 @@ export class OAuthClient<T> {
           );
 
           const emails = await emailResponse.json();
-          console.log("Emails récupérés :", emails);
 
           // Sélectionner l'email principal vérifié
           rawData.email = emails.find(
@@ -126,7 +121,6 @@ export class OAuthClient<T> {
 
         const { data, success, error } =
           this.userInfo.schema.safeParse(rawData);
-        console.log("le user créé", rawData);
 
         if (!success) throw new InvalidUserError(error);
         return data;
@@ -144,8 +138,7 @@ export class OAuthClient<T> {
       client_secret: this.clientSecret,
       code_verifier: codeVerifier,
     });
-    console.log(body);
-    console.log(this.urls.token);
+
     return fetch(this.urls.token, {
       method: "POST",
       headers: {
@@ -156,7 +149,6 @@ export class OAuthClient<T> {
     })
       .then((res) => res.json())
       .then((rawData) => {
-        console.log("les raw datas : ", rawData);
         const { data, success, error } = this.tokenSchema.safeParse(rawData);
         if (!success) throw new InvalidTokenError(error);
 

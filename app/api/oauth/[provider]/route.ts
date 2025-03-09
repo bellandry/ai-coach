@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/core/current-user";
 import { getOAuthClient } from "@/core/oauth/base";
 import { createUserSession } from "@/core/session";
 import { db } from "@/lib/db";
@@ -37,6 +38,8 @@ export async function GET(
       )}`
     );
   }
+  const currentUser = await getCurrentUser();
+  if (currentUser) redirect("/dashboard/profile");
 
   redirect("/dashboard");
 }
@@ -51,33 +54,80 @@ function connectUserToAccount(
   provider: OAuthProvider
 ) {
   return db.$transaction(async (tx) => {
+    let userEmail = email;
+    const currentUser = await getCurrentUser({ withFullUser: true });
+    if (currentUser) {
+      userEmail = currentUser.email;
+    }
+
     let user = await tx.user.findFirst({
-      where: { email: email },
+      where: { email: userEmail },
       select: { id: true, role: true },
     });
 
     if (user == null) {
-      const newUser = await tx.user.create({
-        data: {
-          email,
-          name,
-          profile: picture ?? null,
-        },
-        select: {
-          id: true,
-          role: true,
+      const hasProvider = await tx.userOAuthAccount.findUnique({
+        where: {
+          providerAccountId: id,
+          provider,
         },
       });
-      user = newUser;
-    } else if (picture) {
-      const newUser = await tx.user.update({
-        where: { id: user.id },
-        data: {
-          profile: picture,
-        },
-        select: { id: true, role: true },
-      });
-      user = newUser;
+
+      if (hasProvider) {
+        const theUser = await tx.user.findUnique({
+          where: { id: hasProvider.userId },
+          select: {
+            id: true,
+            role: true,
+          },
+        });
+
+        if (theUser == null) {
+          const newUser = await tx.user.create({
+            data: {
+              email,
+              name,
+              profile: picture ?? null,
+            },
+            select: {
+              id: true,
+              role: true,
+            },
+          });
+          user = newUser;
+
+          await tx.userOAuthAccount.create({
+            data: {
+              provider,
+              userId: user.id,
+              providerAccountId: id,
+            },
+          });
+        } else {
+          user = theUser;
+        }
+      } else {
+        const newUser = await tx.user.create({
+          data: {
+            email,
+            name,
+            profile: picture ?? null,
+          },
+          select: {
+            id: true,
+            role: true,
+          },
+        });
+        user = newUser;
+
+        await tx.userOAuthAccount.create({
+          data: {
+            provider,
+            userId: user.id,
+            providerAccountId: id,
+          },
+        });
+      }
     }
 
     const existingAccount = await tx.userOAuthAccount.findFirst({
