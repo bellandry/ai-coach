@@ -1,9 +1,7 @@
 "use client";
 
-import {
-  connectProvider,
-  disconnectProvider,
-} from "@/app/(root)/dashboard/profile/actions";
+import { oAuthSignIn } from "@/app/(auth)/actions";
+import { disconnectProvider } from "@/app/(root)/dashboard/profile/actions";
 import { UserType } from "@/components/app-sidebar";
 import { OAuthProvider } from "@prisma/client";
 import { Github } from "lucide-react";
@@ -24,7 +22,8 @@ export function ProfileProviders({ user }: ProfileProvidersProps) {
   const handleConnect = async (provider: OAuthProvider) => {
     setIsLoading(provider);
     try {
-      await connectProvider(provider);
+      await oAuthSignIn(provider);
+      // await connectProvider(provider);
     } catch (error) {
       toast.error(`Erreur lors de la connexion à ${provider}`);
       console.error(error);
@@ -35,8 +34,12 @@ export function ProfileProviders({ user }: ProfileProvidersProps) {
   const handleDisconnect = async (provider: OAuthProvider) => {
     setIsLoading(provider);
     try {
-      await disconnectProvider(provider);
-      toast.success(`${provider} déconnecté avec succès`);
+      const disconnected = await disconnectProvider(provider);
+      if (disconnected.success) {
+        toast.success(`${provider} déconnecté avec succès`);
+      } else {
+        toast.error("Vous devez définir un mot de passe de connexion");
+      }
       setIsLoading(null);
     } catch (error) {
       toast.error(`Erreur lors de la déconnexion de ${provider}`);

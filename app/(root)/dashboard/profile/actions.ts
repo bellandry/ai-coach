@@ -1,6 +1,11 @@
 "use server";
 
 import { getCurrentUser } from "@/core/current-user";
+import {
+  comparePasswords,
+  generateSalt,
+  hashPassword,
+} from "@/core/passwordHasher";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { db } from "@/lib/db";
 import { OAuthProvider } from "@prisma/client";
@@ -114,7 +119,7 @@ export async function disconnectProvider(provider: OAuthProvider) {
 
   // Si c'est le seul moyen de connexion, empêcher la déconnexion
   if (oAuthAccounts.length <= 1 && !hasPassword?.password) {
-    throw new Error("Vous devez conserver au moins une méthode de connexion");
+    return { success: false };
   }
 
   // Supprimer le compte OAuth
@@ -122,6 +127,55 @@ export async function disconnectProvider(provider: OAuthProvider) {
     where: {
       userId: currentUser.id,
       provider,
+    },
+  });
+
+  return { success: true };
+}
+
+export async function updateUserPassword(data: {
+  currentPassword?: string;
+  newPassword: string;
+}) {
+  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
+
+  if (!currentUser) {
+    return { success: false, error: "Utilisateur non authentifié" };
+  }
+
+  // Vérifier si l'utilisateur a déjà un mot de passe
+  const user = await db.user.findUnique({
+    where: { id: currentUser.id },
+    select: { password: true, salt: true },
+  });
+
+  // Si l'utilisateur a déjà un mot de passe, vérifier l'ancien mot de passe
+  if (user?.password && user?.salt) {
+    if (!data.currentPassword) {
+      return { success: false, error: "Mot de passe actuel requis" };
+    }
+
+    const isCorrectPassword = await comparePasswords({
+      hashedPassword: user.password,
+      password: data.currentPassword,
+      salt: user.salt,
+    });
+
+    if (!isCorrectPassword) {
+      return { success: false, error: "Mot de passe actuel incorrect" };
+    }
+  }
+
+  // Générer un nouveau sel et hacher le nouveau mot de passe
+  const salt = await generateSalt();
+  const hashedPassword = await hashPassword(data.newPassword, salt);
+
+  // Mettre à jour le mot de passe de l'utilisateur
+  await db.user.update({
+    where: { id: currentUser.id },
+    data: {
+      password: hashedPassword,
+      salt,
     },
   });
 

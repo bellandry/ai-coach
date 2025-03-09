@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   keywords:
     "Evaluation de CV, rédaction de lettres de motivation, préparation d'entretiens, IA, Landry Bella, développeur fullstack, TypeScript, Laclass dev",
   authors: {
-    name: "Landry Bella",
+    name: "Landry Bella | Full-Stack Next.js Developer",
     url: "https://laclass.dev",
   },
   openGraph: {
@@ -62,10 +63,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster richColors position="bottom-right" expand={true} />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
