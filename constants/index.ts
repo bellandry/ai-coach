@@ -14,7 +14,7 @@ export const testimonials = [
   {
     id: 3,
     testimonial:
-      "Si AI Coach était un service payant, je serais prêt à l'acheter sans hésiter. Il a rendu mes candidatures plus percutantes et m'a permis d’être plus confiant en entretien.",
+      "Si AI Coach était un service payant, je serais prêt à l'acheter sans hésiter. Il a rendu mes candidatures plus percutantes et m'a permis d'être plus confiant en entretien.",
     author: "Nina M. - Product Manager @ OpenAI",
   },
 ];
@@ -65,7 +65,7 @@ export const purposes = [
     icon: "🤖",
     title: "Une IA qui booste ta carrière",
     description:
-      "Grâce à l'intelligence artificielle, AI Coach t’aide à préparer des entretiens et à cibler les bonnes opportunités.",
+      "Grâce à l'intelligence artificielle, AI Coach t'aide à préparer des entretiens et à cibler les bonnes opportunités.",
   },
   {
     icon: "📅",
@@ -78,5 +78,45 @@ export const purposes = [
     title: "Organise votre apprentissage",
     description:
       "Organise automatiquement tes tâches d'apprentissage et te fait des rappels automatiques.",
+  },
+];
+
+export const plans = [
+  {
+    name: "Basique",
+    price: "$0/mois",
+    description: "Idéal pour les chercheurs d'emploi débutants",
+    features: [
+      "Modèles de CV personnalisables",
+      "Accès à des conseils d'entretien",
+      "Suivi des candidatures",
+      "Support par email",
+    ],
+  },
+  {
+    name: "Avancé",
+    price: "$20/mois",
+    description: "Pour les professionnels en reconversion",
+    features: [
+      "Modèles de CV illimités",
+      "Préparation aux entretiens personnalisée",
+      "Analyse des candidatures",
+      "Tests de simulation d'entretien",
+      "Collaboration en équipe",
+      "Support prioritaire",
+    ],
+  },
+  {
+    name: "Premium",
+    price: "$49/mois",
+    description: "Pour les équipes et les agences de recrutement",
+    features: [
+      "Accès illimité à toutes les ressources",
+      "Modèles de CV sur mesure",
+      "Accès API pour intégration",
+      "Marque blanche",
+      "Gestionnaire de succès dédié",
+      "Support téléphonique 24/7",
+    ],
   },
 ];

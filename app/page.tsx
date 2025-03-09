@@ -1,9 +1,11 @@
 import { UserType } from "@/components/app-sidebar";
-import { Feature } from "@/components/feature";
-import { Footer } from "@/components/footer-section";
 import { Hero } from "@/components/hero";
+import { Cta } from "@/components/marketing/cta";
+import { Feature } from "@/components/marketing/feature";
+import { Footer } from "@/components/marketing/footer-section";
+import { Pricing } from "@/components/marketing/pricing";
+import { PurposeSection } from "@/components/marketing/purpose-section";
 import { Navbar } from "@/components/navbar";
-import { PurposeSection } from "@/components/purpose-section";
 import { getCurrentUser } from "@/core/current-user";
 
 export default async function Home() {
@@ -17,6 +19,8 @@ export default async function Home() {
       <PurposeSection />
       <Feature />
       {/* <Testimonials /> */}
+      <Pricing />
+      <Cta />
       <Footer />
     </div>
   );

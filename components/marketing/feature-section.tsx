@@ -50,7 +50,7 @@ export function FeatureSteps({
           {title}
         </h2>
 
-        <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-10">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-10 mt-32">
           <div className="order-2 md:order-1 space-y-8">
             {features.map((feature, index) => (
               <motion.div
