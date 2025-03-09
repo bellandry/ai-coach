@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { OAuthProvider } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import React from "react";
 import {
   Card,
   CardContent,

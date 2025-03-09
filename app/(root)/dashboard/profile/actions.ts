@@ -1,6 +1,7 @@
 "use server";
 
 import { getCurrentUser } from "@/core/current-user";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 import { db } from "@/lib/db";
 import { OAuthProvider } from "@prisma/client";
 import { cookies } from "next/headers";
@@ -51,30 +52,45 @@ export async function uploadProfileImage(formData: FormData) {
     throw new Error("Aucun fichier fourni");
   }
 
-  formData.append("file", file);
-  formData.append("upload_preset", "your_preset");
-  const response = await fetch(
-    "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
-    {
-      method: "POST",
-      body: formData,
+  // Convertir le fichier en base64 pour Cloudinary
+  const fileBuffer = await file.arrayBuffer();
+  const fileBase64 = Buffer.from(fileBuffer).toString("base64");
+  const fileUri = `data:${file.type};base64,${fileBase64}`;
+
+  // Générer un nom de fichier unique
+  const fileName = `profile_${currentUser.id}_${Date.now()}`;
+
+  try {
+    // Upload vers Cloudinary
+    const uploadResponse = await uploadToCloudinary(fileUri, fileName);
+
+    if (!uploadResponse.success) {
+      throw new Error("Échec de l'upload vers Cloudinary");
     }
-  );
-  const data = await response.json();
 
-  // Mise à jour du profil utilisateur avec la nouvelle URL
-  await db.user.update({
-    where: { id: currentUser.id },
-    data: { profile: data.secure_url },
-  });
+    const imageUrl = uploadResponse.result?.secure_url;
 
-  return data.secure_url;
+    if (!imageUrl) {
+      throw new Error("URL d'image non disponible");
+    }
+
+    // Mise à jour du profil utilisateur avec la nouvelle URL
+    await db.user.update({
+      where: { id: currentUser.id },
+      data: { profile: imageUrl },
+    });
+
+    return imageUrl;
+  } catch (error) {
+    console.error("Erreur lors de l'upload de l'image:", error);
+    throw new Error("Échec de l'upload de l'image");
+  }
 }
 
 export async function connectProvider(provider: OAuthProvider) {
   // Rediriger vers la page d'authentification OAuth
   const cookieStore = await cookies();
-  cookieStore.set("oauth_redirect_after", "/profile", { path: "/" });
+  cookieStore.set("oauth_redirect_after", "/dashboard/profile", { path: "/" });
 
   redirect(`/api/oauth/${provider}`);
 }
