@@ -57,7 +57,7 @@ export default async function ProfilePage() {
 
         <div className="md:col-span-2">
           <h2 className="text-2xl font-semibold tracking-tight">
-            Fournisseurs d'authentification
+            Fournisseurs d&apos;authentification
           </h2>
           <p className="text-muted-foreground">
             Gérez les services connectés à votre compte.

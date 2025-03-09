@@ -27,7 +27,7 @@ export function PricingCard({ plan, popular, className }: PricingCardProps) {
   return (
     <Card
       className={cn(
-        "relative flex flex-col transition-all hover:border-2 hover:border-primary",
+        "relative flex flex-col transition-all hover:border-primary",
         popular && "border-primary shadow-lg",
         className
       )}

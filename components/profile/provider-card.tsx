@@ -25,7 +25,6 @@ interface ProviderCardProps {
 }
 
 export function ProviderCard({
-  provider,
   title,
   description,
   icon,
