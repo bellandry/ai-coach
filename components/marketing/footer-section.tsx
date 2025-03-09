@@ -12,15 +12,21 @@ import {
 } from "@/components/ui/tooltip";
 import { Facebook, Instagram, Linkedin, Moon, Send, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 function Footer() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
+  const [isDark, setIsDark] = useState<boolean>(false);
 
   const toggle = () => {
-    setTheme(
-      document.documentElement.classList.contains("dark") ? "light" : "dark"
-    );
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    setIsDark(theme === "dark" ? true : false);
   };
+
+  useEffect(() => {
+    setIsDark(theme === "dark" ? true : false);
+  }, [theme]);
 
   return (
     <footer className="relative border-t bg-background text-foreground transition-colors duration-300">
@@ -141,7 +147,7 @@ function Footer() {
               <Sun className="h-4 w-4" />
               <Switch
                 id="dark-mode"
-                checked={document.documentElement.classList.contains("light")}
+                checked={isDark}
                 onCheckedChange={toggle}
               />
               <Moon className="h-4 w-4" />

@@ -6,12 +6,10 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ToggleTheme() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
 
   const toggle = () => {
-    setTheme(
-      document.documentElement.classList.contains("dark") ? "light" : "dark"
-    );
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (

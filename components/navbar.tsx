@@ -44,7 +44,12 @@ export const Navbar = ({ user }: { user: UserType | undefined }) => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" className="min-w-44 z-50">
-                <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+                <DropdownMenuLabel className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-normal text-xs">
+                    {user.email}
+                  </span>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Link
@@ -57,9 +62,7 @@ export const Navbar = ({ user }: { user: UserType | undefined }) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link
-                    href={`${getRoleBasedRedirectPath(
-                      user.role as UserRole
-                    )}/profile`}
+                    href="/dashboard/profile"
                     className="flex gap-2 items-center"
                   >
                     <User2 />
