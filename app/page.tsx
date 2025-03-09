@@ -1,5 +1,6 @@
 import { UserType } from "@/components/app-sidebar";
 import { Feature } from "@/components/feature";
+import { Footer } from "@/components/footer-section";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
 import { PurposeSection } from "@/components/purpose-section";
@@ -16,6 +17,7 @@ export default async function Home() {
       <PurposeSection />
       <Feature />
       {/* <Testimonials /> */}
+      <Footer />
     </div>
   );
 }
