@@ -2,10 +2,12 @@
 
 import { signUp } from "@/app/(auth)/actions";
 import { signUpSchema } from "@/lib/definitions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -21,9 +23,9 @@ import { Input } from "../ui/input";
 import SocialForm from "./social-form";
 
 const SignUpForm = () => {
-  const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -35,7 +37,7 @@ const SignUpForm = () => {
   async function onSubmit(data: z.infer<typeof signUpSchema>) {
     setLoading(true);
     const error = await signUp(data);
-    setError(error);
+    toast.error(error);
     setLoading(false);
   }
 
@@ -48,7 +50,6 @@ const SignUpForm = () => {
       <SocialForm />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {error && <p className="text-destructive">{error}</p>}
           <FormField
             control={form.control}
             name="name"
@@ -76,7 +77,7 @@ const SignUpForm = () => {
                   <Input
                     type="email"
                     {...field}
-                    placeholder="Ex: bellandry@gmail.com"
+                    placeholder="Ex: landry@laclass.dev"
                   />
                 </FormControl>
                 <FormMessage />
@@ -119,17 +120,22 @@ const SignUpForm = () => {
                   />
                 </FormControl>
                 <FormLabel className="ml-2 text-sm font-normal leading-snug">
-                  J&apos;accepte les{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
-                    conditions d&apos;utilisation
-                  </Link>{" "}
-                  et la{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:underline"
-                  >
-                    politique de confidentialité
-                  </Link>
+                  <p>
+                    J&apos;accepte les{" "}
+                    <Link
+                      href="/terms"
+                      className="text-primary hover:underline"
+                    >
+                      conditions d&apos;utilisation
+                    </Link>{" "}
+                    et la{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-primary hover:underline"
+                    >
+                      politique de confidentialité
+                    </Link>
+                  </p>
                 </FormLabel>
                 <FormMessage />
               </FormItem>

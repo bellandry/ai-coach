@@ -2,10 +2,12 @@
 
 import { signIn } from "@/app/(auth)/actions";
 import { signInSchema } from "@/lib/definitions";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import {
@@ -19,20 +21,22 @@ import {
 import { Input } from "../ui/input";
 import SocialForm from "./social-form";
 
+type SignInFormValues = z.infer<typeof signInSchema>;
+
 const SignInForm = () => {
-  const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof signInSchema>>({
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof signInSchema>) {
+  async function onSubmit(data: SignInFormValues) {
     setLoading(true);
     const error = await signIn(data);
-    setError(error);
+    toast.error(error);
     setLoading(false);
   }
 
@@ -45,7 +49,6 @@ const SignInForm = () => {
       <SocialForm />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {error && <p className="text-destructive">{error}</p>}
           <FormField
             control={form.control}
             name="email"
@@ -53,7 +56,11 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input
+                    type="email"
+                    {...field}
+                    placeholder="Ex: landry@laclass.dev"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

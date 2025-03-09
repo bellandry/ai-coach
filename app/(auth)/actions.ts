@@ -17,14 +17,14 @@ import { createUserSession, removeUserFromSession } from "../../core/session";
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
   const { success, data } = signInSchema.safeParse(unsafeData);
 
-  if (!success) return "Unable to log you in";
+  if (!success) return "Veuillez bien remplir tous les champs";
 
   const user = await db.user.findFirst({
     where: { email: data.email },
   });
 
   if (user == null || user.password == null || user.salt == null) {
-    return "Unable to log you in";
+    return "Utilisateur inexistant";
   }
 
   const isCorrectPassword = await comparePasswords({
@@ -43,13 +43,14 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
   const { success, data } = signUpSchema.safeParse(unsafeData);
 
-  if (!success) return "Unable to create account";
+  if (!success) return "Veuillez bien remplir tous les champs";
 
   const existingUser = await db.user.findFirst({
     where: { email: data.email },
   });
 
-  if (existingUser != null) return "Account already exists for this email";
+  if (existingUser != null)
+    return "Un compte est déja associé à cette adresse mail";
 
   try {
     const salt = generateSalt();
@@ -70,10 +71,11 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
       },
     });
 
-    if (user == null) return "Unable to create account";
+    if (user == null)
+      return "Impossible de créer le compte, veuillez réessayer plus tard";
     await createUserSession(user, await cookies());
   } catch {
-    return "Unable to create account";
+    return "Une erreur s'est produite, veuillez réessayer plus tard";
   }
 
   redirect("/dashboard");

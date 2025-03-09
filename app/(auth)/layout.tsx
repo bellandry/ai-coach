@@ -1,10 +1,17 @@
 import { Logo } from "@/components/logo";
+import { getCurrentUser } from "@/core/current-user";
+import { redirect } from "next/navigation";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const currentUser = await getCurrentUser();
+  if (currentUser) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex w-full min-h-screen items-center justify-between">
       <div className="h-screen sticky left-0 top-0 bottom-0 hidden md:w-1/2 md:block bg-muted lg:w-3/5">
@@ -20,7 +27,7 @@ export default function AuthLayout({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
         <Logo className="relative top-2 left-2 text-neutral-100" />
         <div className="flex flex-col gap-2 p-12 justify-end absolute bottom-0 left-0">
-          <h2 className="text-4xl font-semibold">AI Coach</h2>
+          <h2 className="text-4xl font-bold">AI Coach</h2>
           <p className="text-muted-foreground text-md lg:text-lg">
             Visualisez, analysez automatiquement et améliorez votre carrière
             dans la tech.
