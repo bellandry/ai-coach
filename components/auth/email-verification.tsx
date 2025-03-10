@@ -31,7 +31,7 @@ export function EmailVerification({ email }: EmailVerificationProps) {
 
     setIsVerifying(true);
     try {
-      const result = await verifyEmail(otp);
+      const result = await verifyEmail(otp, email);
       if (result.success) {
         toast.success("Email vérifié avec succès");
         router.push("/dashboard");
@@ -49,7 +49,7 @@ export function EmailVerification({ email }: EmailVerificationProps) {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      const result = await resendVerificationEmail();
+      const result = await resendVerificationEmail(email);
       if (result.success) {
         toast.success("Un nouveau code a été envoyé à votre adresse email");
       } else {
