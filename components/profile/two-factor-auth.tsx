@@ -123,12 +123,12 @@ export function TwoFactorAuth({ enabled: initialEnabled }: TwoFactorAuthProps) {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Configurer l'authentification à deux facteurs
+              Configurer l&apos;authentification à deux facteurs
             </DialogTitle>
             <DialogDescription>
               Scannez le code QR ci-dessous avec votre application
-              d'authentification (Google Authenticator, Authy, etc.) puis entrez
-              le code à 6 chiffres généré.
+              d&apos;authentification (Google Authenticator, Authy, etc.) puis
+              entrez le code à 6 chiffres généré.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-4">

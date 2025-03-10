@@ -1,3 +1,4 @@
+import ResetPasswordEmail from "@/emails/reset-password-email";
 import VerificationEmail from "@/emails/verification-email";
 import { render } from "@react-email/render";
 import { createTransport } from "nodemailer";
@@ -33,6 +34,34 @@ export async function sendVerificationEmail({
     html,
   };
   console.log("voici le otp du mail ", otp);
+
+  return transporter.sendMail(options);
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  resetToken,
+}: {
+  to: string;
+  name: string;
+  resetToken: string;
+}) {
+  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+
+  const html = await render(
+    ResetPasswordEmail({
+      name,
+      resetUrl,
+    })
+  );
+
+  const options = {
+    from: `"AI Coach" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: "Réinitialisation de votre mot de passe",
+    html,
+  };
 
   return transporter.sendMail(options);
 }

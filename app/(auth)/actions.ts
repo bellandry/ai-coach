@@ -3,7 +3,7 @@
 import { getOAuthClient } from "@/core/oauth/base";
 import { db } from "@/lib/db";
 import { signUpSchema } from "@/lib/definitions";
-import { sendVerificationEmail } from "@/lib/email";
+import { sendPasswordResetEmail, sendVerificationEmail } from "@/lib/email";
 import { generateOTP } from "@/lib/otp";
 import { verifyToken } from "@/lib/totp";
 import { OAuthProvider } from "@prisma/client";
@@ -271,12 +271,77 @@ export async function verify2FA(token: string) {
   //   maxAge: 60 * 60 * 24 * 7, // 1 semaine
   //   path: "/",
   // });
-  const sessionUser = {
-    id: user.id,
-    role: user.role,
-  };
 
   await createUserSession(user, await cookies());
+
+  return { success: true };
+}
+
+export async function forgotPassword(email: string) {
+  // Vérifier si l'utilisateur existe
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { id: true, name: true, email: true },
+  });
+
+  if (!user) {
+    // Pour des raisons de sécurité, ne pas indiquer si l'email existe ou non
+    return { success: true };
+  }
+
+  // Générer un token de réinitialisation
+  const resetToken = generateOTP(32);
+  const resetTokenExpires = new Date();
+  resetTokenExpires.setHours(resetTokenExpires.getHours() + 1); // Expire dans 1 heure
+
+  // Stocker le token dans la base de données
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: resetTokenExpires,
+    },
+  });
+
+  // Envoyer l'email de réinitialisation
+  await sendPasswordResetEmail({
+    to: user.email,
+    name: user.name,
+    resetToken,
+  });
+
+  return { success: true };
+}
+
+export async function resetPassword(data: { token: string; password: string }) {
+  // Vérifier si le token est valide
+  const user = await db.user.findFirst({
+    where: {
+      resetPasswordToken: data.token,
+      resetPasswordExpires: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "Lien invalide ou expiré" };
+  }
+
+  // Générer un nouveau sel et hacher le nouveau mot de passe
+  const salt = await generateSalt();
+  const hashedPassword = await hashPassword(data.password, salt);
+
+  // Mettre à jour le mot de passe de l'utilisateur
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      salt,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    },
+  });
 
   return { success: true };
 }
