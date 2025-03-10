@@ -26,7 +26,6 @@ const formSchema = z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
     confirmPassword: z.string(),
-    token: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
@@ -51,7 +50,6 @@ export default function ResetPasswordForm() {
     defaultValues: {
       password: "",
       confirmPassword: "",
-      token,
     },
   });
 
@@ -59,7 +57,7 @@ export default function ResetPasswordForm() {
     setIsLoading(true);
     try {
       const result = await resetPassword({
-        token: values.token,
+        token: token as string,
         password: values.password,
       });
 
