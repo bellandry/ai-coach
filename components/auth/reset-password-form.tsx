@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -25,25 +26,32 @@ const formSchema = z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
     confirmPassword: z.string(),
+    token: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
   });
 
-interface ResetPasswordFormProps {
-  token: string;
-}
-
-export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+export default function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const token = searchParams.get("token");
+
+  if (!token) {
+    router.push("/forgot-password");
+    return;
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",
+      token,
     },
   });
 
@@ -51,7 +59,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     setIsLoading(true);
     try {
       const result = await resetPassword({
-        token,
+        token: values.token,
         password: values.password,
       });
 
