@@ -20,17 +20,24 @@ enum OAuthProvider {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String?
-  profile   String?
-  salt      String?
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String    @id @default(uuid())
+  name                   String
+  email                  String    @unique
+  password               String?
+  profile                String?
+  salt                   String?
+  role                   UserRole  @default(USER)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  twoFactorEnabled       Boolean   @default(false)
+  twoFactorSecret        String?
+  emailVerified          Boolean   @default(false)
+  emailVerificationCode  String?
+  emailVerificationExpires DateTime?
 
   oAuthAccounts UserOAuthAccount[]
+  tempSessions  TempSession[]
+  sessions      Session[]
 }
 
 model UserOAuthAccount {
@@ -43,4 +50,18 @@ model UserOAuthAccount {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([providerAccountId, provider])
+}
+
+model TempSession {
+  token   String   @id
+  userId  String
+  expires DateTime
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  token   String   @id
+  userId  String
+  expires DateTime
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

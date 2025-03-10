@@ -1,15 +1,7 @@
 "use client";
 
 import { signIn } from "@/app/(auth)/actions";
-import { signInSchema } from "@/lib/definitions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,27 +9,72 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { OtpVerificationForm } from "./otp-verification-form";
 import SocialForm from "./social-form";
+import { TwoFactorVerificationForm } from "./two-factor-verification-form";
 
-type SignInFormValues = z.infer<typeof signInSchema>;
+const formSchema = z.object({
+  email: z.string().email("Adresse email invalide"),
+  password: z.string().min(1, "Le mot de passe est requis"),
+});
 
-const SignInForm = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const form = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
+export default function SignInForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [requiresVerification, setRequiresVerification] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: SignInFormValues) {
-    setLoading(true);
-    const error = await signIn(data);
-    toast.error(error);
-    setLoading(false);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    try {
+      const result = await signIn(values);
+
+      if (result.success) {
+        toast.success("Connexion réussie");
+        window.location.href = "/dashboard";
+      } else if (result.requiresVerification) {
+        setEmail(values.email);
+        setRequiresVerification(true);
+        toast.info(result.error || "Vérification d'email requise");
+      } else if (result.requires2FA) {
+        setRequires2FA(true);
+        toast.info("Authentification à deux facteurs requise");
+      } else {
+        toast.error(result.error || "Échec de la connexion");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Afficher le formulaire de vérification OTP si nécessaire
+  if (requiresVerification) {
+    return <OtpVerificationForm email={email} />;
+  }
+
+  // Afficher le formulaire de vérification 2FA si nécessaire
+  if (requires2FA) {
+    return <TwoFactorVerificationForm />;
   }
 
   return (
@@ -85,8 +122,8 @@ const SignInForm = () => {
                 <Link href="/forgot-password">Mot de passe oublié ?</Link>
               </Button>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="size-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="size-4 animate-spin" />}
               Me Connecter
             </Button>
             <div className="flex items-center justify-center text-sm text-muted-foreground">
@@ -100,6 +137,4 @@ const SignInForm = () => {
       </Form>
     </div>
   );
-};
-
-export default SignInForm;
+}

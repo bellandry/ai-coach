@@ -1,3 +1,4 @@
+import { db } from "@/lib/db";
 import { redisClient } from "@/redis/redis";
 import { z } from "zod";
 
@@ -49,11 +50,7 @@ export async function createUserSession(
   user: UserSession,
   cookies: Pick<Cookies, "set">
 ) {
-  const array = new Uint8Array(64);
-  crypto.getRandomValues(array);
-  const sessionId = Array.from(array, (byte) =>
-    byte.toString(16).padStart(2, "0")
-  ).join("");
+  const sessionId = await generateSecureToken();
 
   await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
     ex: SESSION_EXPIRATION_SECONDS,
@@ -102,4 +99,77 @@ async function getUserSessionById(sessionId: string) {
   const { success, data: user } = sessionSchema.safeParse(rawUser);
 
   return success ? user : null;
+}
+
+// Fonction utilitaire pour générer un token hexadécimal compatible Edge
+async function generateSecureToken(length = 32): Promise<string> {
+  const buffer = new Uint8Array(length);
+  // Utilisation de l'API Web Crypto au lieu de Node.js crypto
+  crypto.getRandomValues(buffer);
+  return Array.from(buffer)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function createTempSession(userId: string): Promise<string> {
+  // Générer un token temporaire pour la session 2FA
+  const token = await generateSecureToken();
+
+  // Stocker le token temporaire dans la base de données
+  await db.tempSession.create({
+    data: {
+      token,
+      userId,
+      expires: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    },
+  });
+
+  return token;
+}
+
+export async function getUserIdFromTempSession(
+  token: string
+): Promise<string | null> {
+  const session = await db.tempSession.findUnique({
+    where: { token },
+  });
+
+  if (!session || session.expires < new Date()) {
+    // Session expirée ou invalide
+    return null;
+  }
+
+  return session.userId;
+}
+
+// Ajouter cette fonction pour créer une session complète
+export async function createSession(userId: string): Promise<string> {
+  // Similaire à createUserSession mais retourne juste le token
+  const token = await generateSecureToken();
+
+  // Stocker le token dans la base de données
+  await db.session.create({
+    data: {
+      token,
+      userId,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
+    },
+  });
+
+  return token;
+}
+
+// Ajouter cette fonction pour récupérer les sessions actives
+export async function getActiveSessions(): Promise<UserSession[]> {
+  const sessions = await db.session.findMany();
+  const activeUsers: UserSession[] = [];
+
+  for (const session of sessions) {
+    const userSession = await getUserSessionById(session.token);
+    if (userSession) {
+      activeUsers.push(userSession);
+    }
+  }
+
+  return activeUsers;
 }

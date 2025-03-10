@@ -2,6 +2,7 @@ import { PasswordForm } from "@/components/profile/password-form";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileProviders } from "@/components/profile/profile-providers";
+import { TwoFactorAuth } from "@/components/profile/two-factor-auth";
 import { Separator } from "@/components/ui/separator";
 import { getCurrentUser } from "@/core/current-user";
 import { db } from "@/lib/db";
@@ -24,6 +25,14 @@ export default async function ProfilePage() {
   });
 
   const hasPassword = !!userWithPassword?.password;
+
+  // Vérifier si l'utilisateur a déjà activé l'authentification à deux facteurs
+  const userWithTwoFactor = await db.user.findUnique({
+    where: { id: user.id },
+    select: { twoFactorEnabled: true },
+  });
+
+  const twoFactorEnabled = !!userWithTwoFactor?.twoFactorEnabled;
 
   return (
     <div className="container mx-auto px-4 md:px-8 pb-4">
@@ -53,6 +62,18 @@ export default async function ProfilePage() {
           </p>
           <Separator className="my-6" />
           <PasswordForm hasPassword={hasPassword} />
+        </div>
+
+        <div className="md:col-span-2">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Sécurité avancée
+          </h2>
+          <p className="text-muted-foreground">
+            Configurez des options de sécurité supplémentaires pour protéger
+            votre compte.
+          </p>
+          <Separator className="my-6" />
+          <TwoFactorAuth enabled={twoFactorEnabled} />
         </div>
 
         <div className="md:col-span-2">

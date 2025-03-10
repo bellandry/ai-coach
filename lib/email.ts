@@ -1,0 +1,57 @@
+import VerificationEmail from "@/emails/verification-email";
+import { render } from "@react-email/render";
+import { createTransport } from "nodemailer";
+
+const transporter = createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
+
+export async function sendVerificationEmail({
+  to,
+  name,
+  otp,
+}: {
+  to: string;
+  name: string;
+  otp: string;
+}) {
+  const html = await render(
+    VerificationEmail({
+      name,
+      otp,
+    })
+  );
+
+  const options = {
+    from: `"AI Coach" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: "Vérifiez votre adresse email",
+    html,
+  };
+  console.log("voici le otp du mail ", otp);
+
+  return transporter.sendMail(options);
+}
+
+// Fonction de test pour vérifier la configuration des emails
+export async function testEmailConfiguration() {
+  try {
+    await sendVerificationEmail({
+      to: process.env.GMAIL_USER!, // Envoi à vous-même pour tester
+      name: "Test User",
+      otp: "123456",
+    });
+    return { success: true, message: "Email envoyé avec succès" };
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email de test:", error);
+    return {
+      success: false,
+      message: "Échec de l'envoi de l'email",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}

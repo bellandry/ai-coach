@@ -8,6 +8,8 @@ import {
 } from "@/core/passwordHasher";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { db } from "@/lib/db";
+import { generateQRCode } from "@/lib/qrcode";
+import { generateSecret, verifyToken } from "@/lib/totp";
 import { OAuthProvider } from "@prisma/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -176,6 +178,89 @@ export async function updateUserPassword(data: {
     data: {
       password: hashedPassword,
       salt,
+    },
+  });
+
+  return { success: true };
+}
+
+export async function enableTwoFactorAuth() {
+  const currentUser = await getCurrentUser({
+    redirectIfNotFound: true,
+    withFullUser: true,
+  });
+
+  if (!currentUser) {
+    return { success: false, error: "Utilisateur non authentifié" };
+  }
+
+  // Générer un secret TOTP
+  const secret = generateSecret();
+
+  // Générer un QR code pour l'application d'authentification
+  const otpauth = `otpauth://totp/${encodeURIComponent(currentUser.email)}?secret=${secret}&issuer=Ai-Coach`;
+  const qrCodeUrl = await generateQRCode(otpauth);
+
+  // Stocker temporairement le secret (non activé)
+  await db.user.update({
+    where: { id: currentUser.id },
+    data: {
+      twoFactorSecret: secret,
+      twoFactorEnabled: false,
+    },
+  });
+
+  return {
+    success: true,
+    secret,
+    qrCodeUrl,
+  };
+}
+
+export async function verifyTwoFactorCode({
+  secret,
+  token,
+}: {
+  secret: string;
+  token: string;
+}) {
+  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
+
+  if (!currentUser) {
+    return { success: false, error: "Utilisateur non authentifié" };
+  }
+
+  // Vérifier le code TOTP
+  const isValid = verifyToken({ token, secret });
+
+  if (!isValid) {
+    return { success: false, error: "Code invalide" };
+  }
+
+  // Activer l'authentification à deux facteurs
+  await db.user.update({
+    where: { id: currentUser.id },
+    data: {
+      twoFactorEnabled: true,
+    },
+  });
+
+  return { success: true };
+}
+
+export async function disableTwoFactorAuth() {
+  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
+
+  if (!currentUser) {
+    return { success: false, error: "Utilisateur non authentifié" };
+  }
+
+  // Désactiver l'authentification à deux facteurs
+  await db.user.update({
+    where: { id: currentUser.id },
+    data: {
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
     },
   });
 
