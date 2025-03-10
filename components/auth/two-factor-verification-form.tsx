@@ -44,7 +44,8 @@ export function TwoFactorVerificationForm() {
         Authentification à deux facteurs
       </h2>
       <p className="mb-6 max-w-sm text-muted-foreground">
-        Veuillez entrer le code généré par votre application d'authentification.
+        Veuillez entrer le code généré par votre application
+        d&apos;authentification.
       </p>
       <div className="w-full grid gap-4">
         <InputOTP

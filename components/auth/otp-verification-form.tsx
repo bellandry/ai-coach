@@ -2,11 +2,12 @@
 
 import { resendVerificationEmail, verifyEmail } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 
 interface OtpVerificationFormProps {
   email: string;
@@ -38,6 +39,12 @@ export function OtpVerificationForm({ email }: OtpVerificationFormProps) {
     }
   };
 
+  useEffect(() => {
+    if (otp.length === 6) {
+      handleVerify();
+    }
+  }, [otp]);
+
   const handleResend = async () => {
     setIsResending(true);
     try {
@@ -66,16 +73,23 @@ export function OtpVerificationForm({ email }: OtpVerificationFormProps) {
         pour vérifier votre compte.
       </p>
       <div className="w-full grid gap-4">
-        <Input
-          id="otp"
-          placeholder="123456"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
+        <InputOTP
           maxLength={6}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          className="text-center text-lg tracking-widest"
-        />
+          disabled={isVerifying}
+          pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+          onChange={(value) => {
+            setOtp(value);
+          }}
+        >
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
         <Button
           className="w-full"
           onClick={handleVerify}
