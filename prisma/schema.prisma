@@ -67,3 +67,22 @@ model Session {
   expires DateTime
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Provider {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  clientId  String?
+  clientSecret String?
+  enabled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
