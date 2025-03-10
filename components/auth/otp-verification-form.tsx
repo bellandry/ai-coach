@@ -27,7 +27,7 @@ export function OtpVerificationForm({ email }: OtpVerificationFormProps) {
       const result = await verifyEmail(otp, email);
       if (result.success) {
         toast.success("Email vérifié avec succès");
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       } else {
         toast.error(result.error || "Code OTP invalide");
       }
