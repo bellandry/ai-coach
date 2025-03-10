@@ -40,11 +40,6 @@ export default function ResetPasswordForm() {
 
   const token = searchParams.get("token");
 
-  if (!token) {
-    router.push("/forgot-password");
-    return;
-  }
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +47,11 @@ export default function ResetPasswordForm() {
       confirmPassword: "",
     },
   });
+
+  if (!token) {
+    router.push("/forgot-password");
+    return;
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
