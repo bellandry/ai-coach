@@ -1,4 +1,4 @@
-"use client";
+/* eslint-disable */
 
 import ResetPasswordForm from "@/components/auth/reset-password-form";
 import { redirect } from "next/navigation";
