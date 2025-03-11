@@ -4,7 +4,6 @@ import { resendVerificationEmail, verifyEmail } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
@@ -17,7 +16,6 @@ export function OtpVerificationForm({ email }: OtpVerificationFormProps) {
   const [otp, setOtp] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const router = useRouter();
 
   const handleVerify = async () => {
     if (otp.length !== 6) return;
@@ -27,7 +25,7 @@ export function OtpVerificationForm({ email }: OtpVerificationFormProps) {
       const result = await verifyEmail(otp, email);
       if (result.success) {
         toast.success("Email vérifié avec succès");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       } else {
         toast.error(result.error || "Code OTP invalide");
       }

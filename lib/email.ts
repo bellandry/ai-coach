@@ -38,6 +38,8 @@ export async function sendVerificationEmail({
   return transporter.sendMail(options);
 }
 
+const baseUrl = process.env.NEXT_BASE_URL ?? "https://ai-coach.laclass.dev";
+
 export async function sendPasswordResetEmail({
   to,
   name,

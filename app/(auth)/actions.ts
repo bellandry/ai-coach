@@ -50,7 +50,11 @@ export async function signIn(data: { email: string; password: string }) {
     return { success: false, error: "Identifiants invalides" };
   }
 
-  if (!user.emailVerified) {
+  const hasProvider = await db.userOAuthAccount.findFirst({
+    where: { userId: user.id },
+  });
+
+  if (!user.emailVerified && !hasProvider) {
     // Générer un nouveau code OTP et l'envoyer
     await resendVerificationEmail(data.email);
     return {
