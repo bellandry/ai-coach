@@ -7,6 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { data } from "@/constants";
 import { getCurrentUser } from "@/core/current-user";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
@@ -21,9 +22,38 @@ export default async function Page({
     redirectIfNotFound: true,
     withFullUser: true,
   });
+
+  const sidebarData = {
+    ...data,
+    user: {
+      id: currentUser.name,
+      role: currentUser.role,
+      name: currentUser.name,
+      email: currentUser.email,
+      profile: currentUser.profile ?? null,
+    },
+    projects: [
+      ...data.projects,
+      ...(currentUser.role !== "ADMIN"
+        ? [
+            {
+              name: "Paramètres",
+              url: "/dashboard/settings",
+              icon: "Settings",
+            },
+            {
+              name: "Sales & Marketing",
+              url: "#",
+              icon: "PieChart",
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
     <SidebarProvider>
-      <AppSidebar user={currentUser} />
+      <AppSidebar data={sidebarData} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center justify-between gap-2 px-4 w-full">

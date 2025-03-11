@@ -1,17 +1,5 @@
 "use client";
 
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
@@ -25,136 +13,33 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { getLucideIcon } from "@/lib/icon-helper";
+import { LucideIcon } from "lucide-react";
 
 // This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-};
+export interface DataType {
+  user: UserType;
+  teams?: Array<{
+    name: string;
+    logo: string;
+    plan: string;
+  }>;
+  navMain?: Array<{
+    title: string;
+    url: string;
+    icon: string; // Changer ici pour correspondre au type attendu
+    isActive?: boolean;
+    items: Array<{
+      title: string;
+      url: string;
+    }>;
+  }>;
+  projects?: Array<{
+    name: string;
+    url: string;
+    icon: string; // ou le type approprié pour votre icône
+  }>;
+}
 
 export interface UserType {
   id: string;
@@ -165,20 +50,41 @@ export interface UserType {
 }
 
 export function AppSidebar({
-  user,
+  data,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { user: UserType }) {
+}: React.ComponentProps<typeof Sidebar> & { data: DataType }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="">
-        <TeamSwitcher teams={data.teams} />
+        {data.teams && (
+          <TeamSwitcher
+            teams={data.teams.map((team) => ({
+              ...team,
+              logo: getLucideIcon(team.logo) as LucideIcon,
+            }))}
+          />
+        )}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {data.navMain && (
+          <NavMain
+            items={data.navMain.map((item) => ({
+              ...item,
+              icon: getLucideIcon(item.icon) as LucideIcon,
+            }))}
+          />
+        )}
+        {data.projects && (
+          <NavProjects
+            projects={data.projects.map((project) => ({
+              ...project,
+              icon: getLucideIcon(project.icon) as LucideIcon,
+            }))}
+          />
+        )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
