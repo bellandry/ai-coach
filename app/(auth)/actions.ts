@@ -1,5 +1,6 @@
 "use server";
 
+import { getCurrentUser } from "@/core/current-user";
 import { getOAuthClient } from "@/core/oauth/base";
 import { db } from "@/lib/db";
 import { signUpSchema } from "@/lib/definitions";
@@ -61,7 +62,7 @@ export async function signIn(data: { email: string; password: string }) {
       success: false,
       requiresVerification: true,
       error:
-        "Veuillez vérifier votre adresse mail, un code vous a été envoyé par mail",
+        "Veuillez vérifier votre adresse email, un code vous a été envoyé par mail",
     };
   }
 
@@ -100,14 +101,18 @@ export async function signIn(data: { email: string; password: string }) {
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
   const { success, data } = signUpSchema.safeParse(unsafeData);
 
-  if (!success) return "Veuillez bien remplir tous les champs";
+  if (!success)
+    return { success: false, error: "Veuillez bien remplir tous les champs" };
 
   const existingUser = await db.user.findFirst({
     where: { email: data.email },
   });
 
   if (existingUser != null)
-    return "Un compte est déja associé à cette adresse mail";
+    return {
+      success: false,
+      error: "Un compte est déja associé à cette adresse mail",
+    };
 
   try {
     const salt = generateSalt();
@@ -129,10 +134,24 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     });
 
     if (user == null)
-      return "Impossible de créer le compte, veuillez réessayer plus tard";
-    await createUserSession(user, await cookies());
+      return {
+        success: false,
+        error: "Impossible de créer le compte, veuillez réessayer plus tard",
+      };
+
+    await resendVerificationEmail(data.email);
+    return {
+      success: true,
+      requiresVerification: true,
+      error:
+        "Veuillez vérifier votre adresse email, un code vous a été envoyé par mail",
+    };
+    // await createUserSession(user, await cookies());
   } catch {
-    return "Une erreur s'est produite, veuillez réessayer plus tard";
+    return {
+      success: false,
+      error: "Une erreur s'est produite, veuillez réessayer plus tard",
+    };
   }
 
   redirect("/dashboard");
@@ -151,16 +170,58 @@ export async function oAuthSignIn(provider: OAuthProvider) {
 export async function verifyEmail(otp: string, email: string) {
   // Récupérer l'utilisateur avec le code de vérification
   const user = await db.user.findUnique({
-    where: { email },
+    where: { email: email },
     select: {
+      id: true,
       emailVerificationCode: true,
       emailVerificationExpires: true,
       emailVerified: true,
+      pendingEmail: true,
     },
   });
 
   if (!user) {
-    return { success: false, error: "Utilisateur non trouvé" };
+    // Vérifier si c'est un email en attente de vérification
+    const userWithPendingEmail = await db.user.findFirst({
+      where: { pendingEmail: email },
+      select: {
+        id: true,
+        emailVerificationCode: true,
+        emailVerificationExpires: true,
+        pendingEmail: true,
+      },
+    });
+
+    if (!userWithPendingEmail) {
+      return { success: false, error: "Utilisateur non trouvé" };
+    }
+
+    // Vérifier le code OTP
+    if (
+      !userWithPendingEmail.emailVerificationCode ||
+      !userWithPendingEmail.emailVerificationExpires ||
+      userWithPendingEmail.emailVerificationExpires < new Date()
+    ) {
+      return { success: false, error: "Code expiré ou invalide" };
+    }
+
+    if (userWithPendingEmail.emailVerificationCode !== otp) {
+      return { success: false, error: "Code incorrect" };
+    }
+
+    // Mettre à jour l'email de l'utilisateur avec l'email en attente
+    await db.user.update({
+      where: { id: userWithPendingEmail.id },
+      data: {
+        email: userWithPendingEmail.pendingEmail!,
+        pendingEmail: null,
+        emailVerified: true,
+        emailVerificationCode: null,
+        emailVerificationExpires: null,
+      },
+    });
+
+    return { success: true };
   }
 
   if (user.emailVerified) {
@@ -181,7 +242,7 @@ export async function verifyEmail(otp: string, email: string) {
 
   // Marquer l'email comme vérifié
   await db.user.update({
-    where: { email },
+    where: { id: user.id },
     data: {
       emailVerified: true,
       emailVerificationCode: null,
@@ -193,11 +254,21 @@ export async function verifyEmail(otp: string, email: string) {
 }
 
 export async function resendVerificationEmail(email: string) {
+  const currentUser = await getCurrentUser({ withFullUser: true });
   // Vérifier si l'email est déjà vérifié
-  const user = await db.user.findUnique({
-    where: { email },
+  let user = await db.user.findUnique({
+    where: {
+      email: email,
+    },
     select: { emailVerified: true, email: true, name: true },
   });
+
+  if (currentUser && !user) {
+    user = await db.user.findUnique({
+      where: { email: currentUser.email, pendingEmail: email },
+      select: { emailVerified: true, email: true, name: true },
+    });
+  }
 
   if (!user) {
     return { success: false, error: "Utilisateur non trouvé" };
@@ -214,16 +285,19 @@ export async function resendVerificationEmail(email: string) {
 
   // Mettre à jour l'OTP dans la base de données
   await db.user.update({
-    where: { email },
+    where: { email: user.email },
     data: {
       emailVerificationCode: otp,
       emailVerificationExpires: otpExpires,
     },
   });
 
+  let toEmail = user.email;
+  if (currentUser) toEmail = email;
+
   // Envoyer l'email de vérification
   await sendVerificationEmail({
-    to: user.email,
+    to: toEmail,
     name: user.name,
     otp,
   });

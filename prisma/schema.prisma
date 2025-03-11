@@ -23,6 +23,7 @@ model User {
   id                     String    @id @default(uuid())
   name                   String
   email                  String    @unique
+  pendingEmail           String?
   password               String?
   profile                String?
   salt                   String?

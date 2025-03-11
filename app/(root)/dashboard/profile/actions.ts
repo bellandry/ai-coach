@@ -1,5 +1,6 @@
 "use server";
 
+import { resendVerificationEmail } from "@/app/(auth)/actions";
 import { getCurrentUser } from "@/core/current-user";
 import {
   comparePasswords,
@@ -22,7 +23,10 @@ const profileSchema = z.object({
 });
 
 export async function updateUserProfile(data: z.infer<typeof profileSchema>) {
-  const currentUser = await getCurrentUser({ redirectIfNotFound: true });
+  const currentUser = await getCurrentUser({
+    redirectIfNotFound: true,
+    withFullUser: true,
+  });
 
   if (!currentUser) {
     throw new Error("Utilisateur non authentifié");
@@ -60,14 +64,14 @@ export async function updateUserProfile(data: z.infer<typeof profileSchema>) {
     },
   });
 
-  // Import the resendVerificationEmail function from auth actions
-  const { resendVerificationEmail } = await import("@/app/(auth)/actions");
-  
   // Send verification email to the new address
   await resendVerificationEmail(data.email);
 
-  return { success: true, emailVerificationRequired: true, newEmail: data.email };
-
+  return {
+    success: true,
+    emailVerificationRequired: true,
+    newEmail: data.email,
+  };
 }
 
 export async function uploadProfileImage(formData: FormData) {

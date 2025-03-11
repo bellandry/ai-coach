@@ -65,9 +65,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
         email: data.email,
         profile: data.profileImage,
       });
-      
+
       if (result.emailVerificationRequired) {
-        toast.info("Un code de vérification a été envoyé à votre nouvelle adresse email");
+        toast.info(
+          "Un code de vérification a été envoyé à votre nouvelle adresse email"
+        );
         setShowVerification(true);
       } else {
         toast.success("Profil mis à jour avec succès");
@@ -153,7 +155,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                           }
                         }}
                       >
-                        <Mail className="h-4 w-4 mr-2" />{" "}
+                        <Mail className="h-4 w-4" />{" "}
                         <span className="hidden md:block">Vérifier</span>
                       </Button>
                     )}
@@ -180,7 +182,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
         open={showVerification}
         onClose={() => setShowVerification(false)}
         onSuccess={() => {
-          // Refresh the page to update the user data
           window.location.reload();
         }}
       />

@@ -20,10 +20,14 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { OtpVerificationForm } from "./otp-verification-form";
 import SocialForm from "./social-form";
 
 const SignUpForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [requiresVerification, setRequiresVerification] = useState(false);
+  const [email, setEmail] = useState("");
+
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -36,9 +40,25 @@ const SignUpForm = () => {
 
   async function onSubmit(data: z.infer<typeof signUpSchema>) {
     setLoading(true);
-    const error = await signUp(data);
-    toast.error(error);
-    setLoading(false);
+    try {
+      const result = await signUp(data);
+
+      if (result.success && result.requiresVerification) {
+        setEmail(data.email);
+        setRequiresVerification(true);
+        toast.info(result.error || "Vérification d'email requise");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Afficher le formulaire de vérification OTP si nécessaire
+  if (requiresVerification) {
+    return <OtpVerificationForm email={email} />;
   }
 
   return (
