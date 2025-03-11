@@ -2,7 +2,6 @@
 
 import { verify2FA } from "@/app/(auth)/actions";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
@@ -10,7 +9,6 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 export function TwoFactorVerificationForm() {
   const [token, setToken] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  const router = useRouter();
 
   const handleVerify = async () => {
     if (token.length !== 6) return;
@@ -20,7 +18,7 @@ export function TwoFactorVerificationForm() {
       const result = await verify2FA(token);
       if (result.success) {
         toast.success("Authentification réussie");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       } else {
         toast.error(result.error || "Code invalide");
       }

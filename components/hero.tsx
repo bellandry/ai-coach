@@ -63,7 +63,7 @@ export const Hero = () => {
         <div className="flex-1 relative">
           <SplineScene
             scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            className="w-full h-full drop-shadow-[0_0_30px_rgba(255,105,180,0.4)] dark:drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
+            className="w-full h-full drop-shadow-[0_0_30px_rgba(75,0,130,0.4)]"
           />
         </div>
       </div>

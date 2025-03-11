@@ -1,7 +1,9 @@
 "use client";
 
+import { resendVerificationEmail } from "@/app/(auth)/actions";
 import { updateUserProfile } from "@/app/(root)/dashboard/profile/actions";
 import { UserType } from "@/components/app-sidebar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,11 +16,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ProfileEmailVerification } from "./email-verification";
 import { ProfileImageUpload } from "./profile-image-upload";
 
 const profileFormSchema = z.object({
@@ -34,11 +37,16 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface ProfileFormProps {
-  user: UserType;
+  user: UserType & {
+    emailVerified?: boolean;
+    oAuthAccounts?: { provider: string }[];
+  };
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const hasProvider = user.oAuthAccounts && user.oAuthAccounts.length > 0;
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -52,12 +60,18 @@ export function ProfileForm({ user }: ProfileFormProps) {
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
     try {
-      await updateUserProfile({
+      const result = await updateUserProfile({
         name: data.name,
         email: data.email,
         profile: data.profileImage,
       });
-      toast.success("Profil mis à jour avec succès");
+      
+      if (result.emailVerificationRequired) {
+        toast.info("Un code de vérification a été envoyé à votre nouvelle adresse email");
+        setShowVerification(true);
+      } else {
+        toast.success("Profil mis à jour avec succès");
+      }
     } catch (error) {
       toast.error("Erreur lors de la mise à jour du profil");
       console.error(error);
@@ -68,6 +82,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
   return (
     <Form {...form}>
+      {!user.emailVerified && !hasProvider && (
+        <div className="w-full p-2 flex items-center text-yellow-800 bg-amber-50/60">
+          Votre adresse mail n&apos;est pas encore vérifiée
+        </div>
+      )}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
         <div className="grid gap-4">
           <ProfileImageUpload
@@ -93,9 +112,52 @@ export function ProfileForm({ user }: ProfileFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <div className="flex justify-between items-center">
+                  <FormLabel>Email</FormLabel>
+                  {user.emailVerified ? (
+                    <Badge
+                      variant="outline"
+                      className="bg-green-50 text-green-700 border-green-200"
+                    >
+                      Vérifié
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant={hasProvider ? "outline" : "destructive"}
+                      className={
+                        hasProvider
+                          ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                          : ""
+                      }
+                    >
+                      Non vérifié
+                    </Badge>
+                  )}
+                </div>
                 <FormControl>
-                  <Input placeholder="votre@email.com" {...field} />
+                  <div className="flex gap-2">
+                    <Input placeholder="votre@email.com" {...field} />
+                    {!user.emailVerified && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="w-fit px-2"
+                        onClick={() => {
+                          if (field.value) {
+                            resendVerificationEmail(field.value);
+                            setShowVerification(true);
+                            toast.success(
+                              "Un code de vérification a été envoyé à votre adresse email"
+                            );
+                          }
+                        }}
+                      >
+                        <Mail className="h-4 w-4 mr-2" />{" "}
+                        <span className="hidden md:block">Vérifier</span>
+                      </Button>
+                    )}
+                  </div>
                 </FormControl>
                 <FormDescription>
                   Cet email sera utilisé pour vous connecter.
@@ -112,6 +174,16 @@ export function ProfileForm({ user }: ProfileFormProps) {
           </Button>
         </div>
       </form>
+
+      <ProfileEmailVerification
+        email={form.getValues().email}
+        open={showVerification}
+        onClose={() => setShowVerification(false)}
+        onSuccess={() => {
+          // Refresh the page to update the user data
+          window.location.reload();
+        }}
+      />
     </Form>
   );
 }

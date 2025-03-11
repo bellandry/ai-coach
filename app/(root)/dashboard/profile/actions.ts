@@ -34,16 +34,40 @@ export async function updateUserProfile(data: z.infer<typeof profileSchema>) {
     throw new Error("Données de profil invalides");
   }
 
+  // Check if email has changed
+  const emailChanged = currentUser.email !== data.email;
+
+  // If email hasn't changed, update profile normally
+  if (!emailChanged) {
+    await db.user.update({
+      where: { id: currentUser.id },
+      data: {
+        name: data.name,
+        profile: data.profile || null,
+      },
+    });
+    return { success: true };
+  }
+
+  // If email has changed, store the new email temporarily and send verification code
   await db.user.update({
     where: { id: currentUser.id },
     data: {
       name: data.name,
-      email: data.email,
       profile: data.profile || null,
+      pendingEmail: data.email,
+      emailVerified: false,
     },
   });
 
-  return { success: true };
+  // Import the resendVerificationEmail function from auth actions
+  const { resendVerificationEmail } = await import("@/app/(auth)/actions");
+  
+  // Send verification email to the new address
+  await resendVerificationEmail(data.email);
+
+  return { success: true, emailVerificationRequired: true, newEmail: data.email };
+
 }
 
 export async function uploadProfileImage(formData: FormData) {

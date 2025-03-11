@@ -49,7 +49,7 @@ export async function sendPasswordResetEmail({
   name: string;
   resetToken: string;
 }) {
-  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+  const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
   const html = await render(
     ResetPasswordEmail({
