@@ -70,7 +70,7 @@ export function UpdateUserRoleDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Modifier le rôle de l'utilisateur</DialogTitle>
+          <DialogTitle>Modifier le rôle de l&apos;utilisateur</DialogTitle>
           <DialogDescription>
             Vous êtes sur le point de modifier le rôle de {user.name} (
             {user.email}).
