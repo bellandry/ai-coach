@@ -23,6 +23,7 @@ import { Check, MoreHorizontal, Shield, X } from "lucide-react";
 import { useState } from "react";
 import { UpdateUserRoleDialog } from "./update-user-role-dialog";
 import { UpdateUserStatusDialog } from "./update-user-status-dialog";
+import { CreateUserDialog } from "./create-user-dialog";
 
 type User = {
   id: string;
@@ -43,6 +44,7 @@ export function UsersTable({ users }: UsersTableProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   // Filter users based on search term
   const filteredUsers = users.filter(
@@ -61,6 +63,12 @@ export function UsersTable({ users }: UsersTableProps) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <Button
+          onClick={() => setShowCreateDialog(true)}
+          className="ml-4"
+        >
+          Créer un utilisateur
+        </Button>
       </div>
 
       <div className="rounded-md border">
@@ -170,6 +178,11 @@ export function UsersTable({ users }: UsersTableProps) {
           />
         </>
       )}
+      
+      <CreateUserDialog
+        open={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+      />
     </div>
   );
 }

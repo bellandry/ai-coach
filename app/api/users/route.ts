@@ -1,20 +1,19 @@
-import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/(auth)/auth";
+import { getCurrentUser } from "@/core/current-user";
+import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== "ADMIN") {
+    const user = await getCurrentUser();
+
+    if (!user || user.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized access" },
         { status: 403 }
       );
     }
 
-    const users = await prisma.user.findMany({
+    const users = await db.user.findMany({
       select: {
         id: true,
         email: true,
