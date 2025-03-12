@@ -37,6 +37,7 @@ model User {
   emailVerificationExpires DateTime?
   resetPasswordToken     String?
   resetPasswordExpires   DateTime?
+  disabled               Boolean  @default(false)
 
   oAuthAccounts UserOAuthAccount[]
   tempSessions  TempSession[]

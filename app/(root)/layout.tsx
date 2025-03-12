@@ -34,7 +34,7 @@ export default async function Page({
     },
     projects: [
       ...data.projects,
-      ...(currentUser.role !== "ADMIN"
+      ...(currentUser.role === "ADMIN"
         ? [
             {
               name: "Paramètres",
@@ -42,9 +42,9 @@ export default async function Page({
               icon: "Settings",
             },
             {
-              name: "Sales & Marketing",
-              url: "#",
-              icon: "PieChart",
+              name: "Utilisateurs",
+              url: "/dashboard/users",
+              icon: "Users",
             },
           ]
         : []),
