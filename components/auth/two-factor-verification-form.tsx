@@ -2,8 +2,10 @@
 
 import { verify2FA } from "@/app/(auth)/actions";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 
 export function TwoFactorVerificationForm() {
@@ -45,7 +47,7 @@ export function TwoFactorVerificationForm() {
         Veuillez entrer le code généré par votre application
         d&apos;authentification.
       </p>
-      <div className="w-full grid gap-4">
+      <div className="grid gap-4 w-full">
         <InputOTP
           maxLength={6}
           disabled={isVerifying}
@@ -63,14 +65,14 @@ export function TwoFactorVerificationForm() {
             <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
-        {/* <Button
+        <Button
           className="w-full"
           onClick={handleVerify}
           disabled={token.length !== 6 || isVerifying}
         >
-          {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isVerifying && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
           Vérifier
-        </Button> */}
+        </Button>
       </div>
     </div>
   );

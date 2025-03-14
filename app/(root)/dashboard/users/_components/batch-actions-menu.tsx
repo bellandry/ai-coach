@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Power, Trash } from "lucide-react";
+import { ChevronDown, Trash } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { deleteUser } from "../actions";
@@ -91,35 +91,31 @@ export function BatchActionsMenu({
           <Button
             variant="outline"
             className="ml-2"
-            disabled={disabled || isLoading || selectedUsers.length === 0}
+            disabled={disabled || isLoading || selectedUsers.length < 2}
           >
             Actions
-            <ChevronDown className="w-4 h-4 ml-2" />
+            <ChevronDown className="ml-2 w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() => handleBatchStatusChange(true)}
             disabled={isLoading}
-            className="text-amber-600"
           >
-            <Power className="w-4 h-4 mr-2" />
-            Désactiver les comptes
+            Désactiver {selectedUsers.length} comptes
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => handleBatchStatusChange(false)}
             disabled={isLoading}
-            className="text-green-600"
           >
-            <Power className="w-4 h-4 mr-2" />
-            Activer les comptes
+            Activer {selectedUsers.length} comptes
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleBatchDelete}
             disabled={isLoading}
             className="text-destructive"
           >
-            <Trash className="w-4 h-4 mr-2" />
+            <Trash className="mr-2 w-4 h-4" />
             Supprimer les utilisateurs
           </DropdownMenuItem>
         </DropdownMenuContent>

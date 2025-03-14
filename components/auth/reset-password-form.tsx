@@ -130,12 +130,15 @@ export default function ResetPasswordForm() {
           />
           <div className="grid gap-2">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="size-4 animate-spin mr-2" />}
+              {isLoading && <Loader2 className="mr-2 animate-spin size-4" />}
               Réinitialiser le mot de passe
             </Button>
           </div>
         </form>
       </Form>
+      <Button asChild variant="link">
+        <Link href="/sign-in">Retour à la connexion</Link>
+      </Button>
     </div>
   );
 }
