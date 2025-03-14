@@ -80,7 +80,7 @@ export default function SignInForm() {
   return (
     <div className="grid gap-4">
       <h2 className="text-3xl font-bold tracking-tight">Connexion</h2>
-      <p className="mb-6 max-w-sm text-muted-foreground">
+      <p className="max-w-sm mb-6 text-muted-foreground">
         Bienvenue sur AI Coach. Veuillez vous connecter pour continuer.
       </p>
       <SocialForm />
@@ -117,13 +117,18 @@ export default function SignInForm() {
             )}
           />
           <div className="grid gap-2">
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              <Button asChild variant="link" size="sm">
+                <Link href="/sign-in/magic-link">
+                  Connexion sans mot de passe
+                </Link>
+              </Button>
               <Button asChild variant="link" size="sm">
                 <Link href="/forgot-password">Mot de passe oublié ?</Link>
               </Button>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="size-4 animate-spin" />}
+              {isLoading && <Loader2 className="animate-spin size-4" />}
               Me Connecter
             </Button>
             <div className="flex items-center justify-center text-sm text-muted-foreground">

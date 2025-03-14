@@ -1,3 +1,4 @@
+import MagicLinkEmail from "@/emails/magic-link-email";
 import ResetPasswordEmail from "@/emails/reset-password-email";
 import VerificationEmail from "@/emails/verification-email";
 import { render } from "@react-email/render";
@@ -62,6 +63,34 @@ export async function sendPasswordResetEmail({
     from: `"AI Coach" <${process.env.GMAIL_USER}>`,
     to,
     subject: "Réinitialisation de votre mot de passe",
+    html,
+  };
+
+  return transporter.sendMail(options);
+}
+
+export async function sendMagicLinkEmail({
+  to,
+  name,
+  magicLinkToken,
+}: {
+  to: string;
+  name: string;
+  magicLinkToken: string;
+}) {
+  const magicLinkUrl = `${baseUrl}/magic-link?token=${magicLinkToken}`;
+
+  const html = await render(
+    MagicLinkEmail({
+      name,
+      magicLinkUrl,
+    })
+  );
+
+  const options = {
+    from: `"AI Coach" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: "Connexion à AI Coach",
     html,
   };
 

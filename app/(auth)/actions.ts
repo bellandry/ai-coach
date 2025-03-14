@@ -4,7 +4,11 @@ import { getCurrentUser } from "@/core/current-user";
 import { getOAuthClient } from "@/core/oauth/base";
 import { db } from "@/lib/db";
 import { signUpSchema } from "@/lib/definitions";
-import { sendPasswordResetEmail, sendVerificationEmail } from "@/lib/email";
+import {
+  sendMagicLinkEmail,
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from "@/lib/email";
 import { generateOTP } from "@/lib/otp";
 import { verifyToken } from "@/lib/totp";
 import { OAuthProvider } from "@prisma/client";
@@ -420,6 +424,98 @@ export async function resetPassword(data: { token: string; password: string }) {
       resetPasswordExpires: null,
     },
   });
+
+  return { success: true };
+}
+
+export async function sendMagicLink(email: string) {
+  // Vérifier si l'utilisateur existe
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { id: true, name: true, email: true, emailVerified: true },
+  });
+
+  if (!user) {
+    return { success: true };
+  }
+
+  if (!user.emailVerified) {
+    return {
+      success: false,
+      error:
+        "Pour uiliser cette fonctionnalité, vous devez d'abord vérifier votre adresse email.",
+    };
+  }
+
+  // Générer un token pour le magic link
+  const magicLinkToken = generateOTP(32);
+  const magicLinkExpires = new Date();
+  magicLinkExpires.setMinutes(magicLinkExpires.getMinutes() + 15); // Expire dans 15 minutes
+
+  // Stocker le token dans la base de données
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      resetPasswordToken: magicLinkToken, // Réutilisation du champ resetPasswordToken
+      resetPasswordExpires: magicLinkExpires,
+    },
+  });
+
+  // Envoyer l'email avec le magic link
+  await sendMagicLinkEmail({
+    to: user.email,
+    name: user.name,
+    magicLinkToken,
+  });
+
+  return { success: true };
+}
+
+export async function verifyMagicLink(token: string) {
+  // Vérifier si le token est valide
+  const user = await db.user.findFirst({
+    where: {
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        gt: new Date(),
+      },
+    },
+    select: {
+      id: true,
+      role: true,
+      emailVerified: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "Lien invalide ou expiré" };
+  }
+
+  // Marquer l'email comme vérifié si ce n'est pas déjà fait
+  if (!user.emailVerified) {
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+      },
+    });
+  }
+
+  // Supprimer le token utilisé
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    },
+  });
+
+  // Créer une session pour l'utilisateur
+  const userSession = {
+    id: user.id,
+    role: user.role,
+  };
+  await createUserSession(userSession, await cookies());
 
   return { success: true };
 }
